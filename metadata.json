@@ -1,0 +1,6 @@
+{
+  "name": "ChatTube",
+  "description": "High-energy mix of Snapchat and Instagram featuring a scrollable Tube Feed of visual posts, mock camera with real-time visual filters, vanishing direct message Snaps, friend stories player, and a Gemini-powered AI Filter/Caption assistant.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

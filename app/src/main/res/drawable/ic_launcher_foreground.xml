@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Speech Bubble Outline (glowing gradient) -->
+    <path
+        android:pathData="M 34 22 L 74 22 A 12 12 0 0 1 86 34 L 86 60 A 12 12 0 0 1 74 72 L 48 72 L 31 82 C 31 82 30 78 30 76 L 30 72 A 12 12 0 0 1 22 60 L 22 34 A 12 12 0 0 1 34 22 Z"
+        android:strokeLineCap="round"
+        android:strokeWidth="2.5">
+        <aapt:attr name="android:strokeColor">
+            <gradient
+                android:endX="86.0"
+                android:endY="72.0"
+                android:startX="22.0"
+                android:startY="22.0"
+                android:type="linear">
+                <item
+                    android:color="#FF00FFFF"
+                    android:offset="0.0" />
+                <item
+                    android:color="#FFE1306C"
+                    android:offset="1.0" />
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- Camera Body Outline -->
+    <path
+        android:pathData="M 38 61 L 70 61 C 72.2 61 74 59.2 74 57 L 74 42 C 74 39.8 72.2 38 70 38 L 61 38 C 59.8 38 58 35.5 57 35.5 L 51 35.5 C 50 35.5 48.2 38 47 38 L 38 38 C 35.8 38 34 39.8 34 42 L 34 57 C 34 59.2 35.8 61 38 61 Z"
+        android:strokeLineCap="round"
+        android:strokeWidth="2.2">
+        <aapt:attr name="android:strokeColor">
+            <gradient
+                android:endX="74.0"
+                android:endY="61.0"
+                android:startX="34.0"
+                android:startY="38.0"
+                android:type="linear">
+                <item
+                    android:color="#FF00D8F6"
+                    android:offset="0.0" />
+                <item
+                    android:color="#FFF000FF"
+                    android:offset="1.0" />
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- Lens Ring Center -->
+    <path
+        android:pathData="M 54 41 A 8.5 8.5 0 1 1 54 58 A 8.5 8.5 0 1 1 54 41 Z"
+        android:strokeWidth="2.0">
+        <aapt:attr name="android:strokeColor">
+            <gradient
+                android:endX="62.5"
+                android:endY="58.0"
+                android:startX="45.5"
+                android:startY="41.0"
+                android:type="linear">
+                <item
+                    android:color="#FF00FFFF"
+                    android:offset="0.0" />
+                <item
+                    android:color="#FFE1306C"
+                    android:offset="1.0" />
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- Solid Play Triangle (glowing white) -->
+    <path
+        android:pathData="M 51.5 45.8 L 59.5 49.5 L 51.5 53.2 Z"
+        android:fillColor="#FFFFFF" />
+
+</vector>

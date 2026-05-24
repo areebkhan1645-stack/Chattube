@@ -1,0 +1,308 @@
+package com.example.ui.screens
+
+import androidx.compose.animation.*
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.example.ui.viewmodel.ChatTubeViewModel
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun AuthScreen(
+    viewModel: ChatTubeViewModel,
+    modifier: Modifier = Modifier
+) {
+    var isSignUpMode by remember { mutableStateOf(false) }
+    
+    // Form Inputs
+    var usernameInput by remember { mutableStateOf("") }
+    var nameInput by remember { mutableStateOf("") }
+    var bioInput by remember { mutableStateOf("") }
+    var errorMsg by remember { mutableStateOf("") }
+
+    val logoBrush = Brush.linearGradient(ChatTubeColors.Instagradient)
+
+    Scaffold(
+        modifier = modifier.fillMaxSize(),
+        containerColor = ChatTubeColors.DarkBackground
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .padding(24.dp)
+                .verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // Beautiful Gradient App Logo & Brand header
+            ChatTubeLogo(
+                modifier = Modifier
+                    .size(110.dp)
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Text(
+                text = "CHATTUBE",
+                color = Color.White,
+                fontSize = 28.sp,
+                fontWeight = FontWeight.Black,
+                letterSpacing = 4.sp,
+                textAlign = TextAlign.Center
+            )
+
+            Text(
+                text = "Secure Social Creation Hub",
+                color = ChatTubeColors.Yellow,
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Bold,
+                letterSpacing = 1.sp,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(top = 4.dp)
+            )
+
+            Spacer(modifier = Modifier.height(36.dp))
+
+            // Card Form Container
+            Card(
+                colors = CardDefaults.cardColors(containerColor = ChatTubeColors.SurfaceDark),
+                border = androidx.compose.foundation.BorderStroke(1.dp, ChatTubeColors.BorderDark),
+                shape = RoundedCornerShape(24.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Column(
+                    modifier = Modifier.padding(24.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    Text(
+                        text = if (isSignUpMode) "Create Creator Profile" else "Welcome Back",
+                        color = Color.White,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+
+                    if (errorMsg.isNotEmpty()) {
+                        Text(
+                            text = errorMsg,
+                            color = Color.Red,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
+
+                    // Fields
+                    if (isSignUpMode) {
+                        OutlinedTextField(
+                            value = nameInput,
+                            onValueChange = { nameInput = it; errorMsg = "" },
+                            label = { Text("Full Creator Name") },
+                            placeholder = { Text("e.g. Sarah Connor") },
+                            leadingIcon = { Icon(Icons.Default.Person, contentDescription = "Name") },
+                            modifier = Modifier.fillMaxWidth().testTag("signup_name_input"),
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedTextColor = Color.White,
+                                unfocusedTextColor = Color.White,
+                                focusedBorderColor = ChatTubeColors.Pink,
+                                unfocusedBorderColor = ChatTubeColors.BorderDark
+                            ),
+                            shape = RoundedCornerShape(12.dp)
+                        )
+
+                        OutlinedTextField(
+                            value = usernameInput,
+                            onValueChange = { usernameInput = it.lowercase().trim(); errorMsg = "" },
+                            label = { Text("Interactive Handle") },
+                            placeholder = { Text("e.g. sarah_travels") },
+                            leadingIcon = { Icon(Icons.Default.Person, contentDescription = "Username") },
+                            modifier = Modifier.fillMaxWidth().testTag("signup_username_input"),
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedTextColor = Color.White,
+                                unfocusedTextColor = Color.White,
+                                focusedBorderColor = ChatTubeColors.Pink,
+                                unfocusedBorderColor = ChatTubeColors.BorderDark
+                            ),
+                            shape = RoundedCornerShape(12.dp)
+                        )
+
+                        OutlinedTextField(
+                            value = bioInput,
+                            onValueChange = { bioInput = it; errorMsg = "" },
+                            label = { Text("Short Studio Bio") },
+                            placeholder = { Text("Tell the world your tube style...") },
+                            leadingIcon = { Icon(Icons.Default.Info, contentDescription = "Bio") },
+                            modifier = Modifier.fillMaxWidth().testTag("signup_bio_input"),
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedTextColor = Color.White,
+                                unfocusedTextColor = Color.White,
+                                focusedBorderColor = ChatTubeColors.Pink,
+                                unfocusedBorderColor = ChatTubeColors.BorderDark
+                            ),
+                            shape = RoundedCornerShape(12.dp),
+                            maxLines = 3
+                        )
+                    } else {
+                        OutlinedTextField(
+                            value = usernameInput,
+                            onValueChange = { usernameInput = it.lowercase().trim(); errorMsg = "" },
+                            label = { Text("Enter Username") },
+                            placeholder = { Text("chattuber_pro") },
+                            leadingIcon = { Icon(Icons.Default.Person, contentDescription = "Username") },
+                            modifier = Modifier.fillMaxWidth().testTag("username_input"),
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedTextColor = Color.White,
+                                unfocusedTextColor = Color.White,
+                                focusedBorderColor = ChatTubeColors.Yellow,
+                                unfocusedBorderColor = ChatTubeColors.BorderDark
+                            ),
+                            shape = RoundedCornerShape(12.dp)
+                        )
+                    }
+
+                    // Main Action Button (Instagram / Snapchat design merge button)
+                    Button(
+                        onClick = {
+                            if (isSignUpMode) {
+                                if (nameInput.trim().isEmpty() || usernameInput.trim().isEmpty()) {
+                                    errorMsg = "Full Name and Handle cannot be empty."
+                                } else {
+                                    viewModel.signup(
+                                        username = usernameInput,
+                                        name = nameInput,
+                                        bio = if (bioInput.trim().isEmpty()) "Tubes and Snaps Creator! ✨" else bioInput
+                                    )
+                                }
+                            } else {
+                                if (usernameInput.trim().isEmpty()) {
+                                    errorMsg = "Please enter your username handle."
+                                } else {
+                                    viewModel.login(usernameInput)
+                                }
+                            }
+                        },
+                        colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
+                        contentPadding = PaddingValues(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(52.dp)
+                            .testTag("auth_submit_button")
+                            .clip(RoundedCornerShape(16.dp))
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(Brush.linearGradient(if (isSignUpMode) ChatTubeColors.Instagradient else ChatTubeColors.Snapgradient)),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                Text(
+                                    text = if (isSignUpMode) "Start Chattubing! 🌈" else "Sign In Safely 🛸",
+                                    color = if (isSignUpMode) Color.White else Color.Black,
+                                    fontWeight = FontWeight.Black,
+                                    fontSize = 15.sp
+                                )
+                                Icon(
+                                    imageVector = Icons.Default.ArrowForward,
+                                    contentDescription = "Forward Action",
+                                    tint = if (isSignUpMode) Color.White else Color.Black
+                                )
+                            }
+                        }
+                    }
+
+                    // Toggle mode option
+                    TextButton(
+                        onClick = {
+                            isSignUpMode = !isSignUpMode
+                            errorMsg = ""
+                        },
+                        modifier = Modifier.align(Alignment.CenterHorizontally).testTag("signup_toggle")
+                    ) {
+                        Text(
+                            text = if (isSignUpMode) "Already have a creator lab? Log In" else "New to ChatTube? Register Studio Profile",
+                            color = Color.LightGray,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // Demo Shortcut Panel - incredibly friendly for testing
+            Card(
+                colors = CardDefaults.cardColors(containerColor = ChatTubeColors.SurfaceDark.copy(alpha = 0.5f)),
+                border = androidx.compose.foundation.BorderStroke(1.dp, ChatTubeColors.BorderDark.copy(alpha = 0.5f)),
+                shape = RoundedCornerShape(16.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text(
+                        "🔒 INSTANT DEV ACCESS",
+                        color = Color.Gray,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 10.sp,
+                        letterSpacing = 1.sp
+                    )
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Button(
+                            onClick = {
+                                viewModel.login("chattuber_pro")
+                            },
+                            colors = ButtonDefaults.buttonColors(containerColor = Color.White.copy(alpha = 0.08f)),
+                            modifier = Modifier.weight(1f).height(36.dp)
+                        ) {
+                            Text("Fast login (@pro)", color = Color.White, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                        }
+                        
+                        Button(
+                            onClick = {
+                                viewModel.signup("chattuber_pro", "ChatTuber Premium", "Creator & Visual Philosopher 📸✨ Adding a splash of tube to my snaps!")
+                            },
+                            colors = ButtonDefaults.buttonColors(containerColor = Color.White.copy(alpha = 0.08f)),
+                            modifier = Modifier.weight(1f).height(36.dp)
+                        ) {
+                            Text("Reset & Seed", color = Color.White, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
