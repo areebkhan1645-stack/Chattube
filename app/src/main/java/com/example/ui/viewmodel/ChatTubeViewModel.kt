@@ -44,6 +44,9 @@ class ChatTubeViewModel(application: Application) : AndroidViewModel(application
     val userStats: StateFlow<UserStatsEntity?> = repository.userStats
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
 
+    val loggedInAccounts: StateFlow<List<UserStatsEntity>> = repository.loggedInAccounts
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
     // Active visual States
     private val _activeViewingStoryIndex = MutableStateFlow<Int?>(-1) // index in stories or story list, null/negative if none
     val activeViewingStoryIndex: StateFlow<Int?> = _activeViewingStoryIndex.asStateFlow()
@@ -67,13 +70,6 @@ class ChatTubeViewModel(application: Application) : AndroidViewModel(application
     // Temporary user text inputs for feeds
     val newCommentText = MutableStateFlow("")
 
-    init {
-        // Seed database if empty inside coroutine scope
-        viewModelScope.launch {
-            repository.seedDatabaseIfEmpty()
-        }
-    }
-
     // Repository operations exposed securely to UI
     fun likePost(postId: Long, currentLikeStatus: Boolean) {
         viewModelScope.launch {
@@ -93,6 +89,9 @@ class ChatTubeViewModel(application: Application) : AndroidViewModel(application
                 filterApplied = filterApplied
             )
             repository.incrementStreak() // posting keeps streak alive!
+            if (mediaType == "TUBE") {
+                repository.gamifyReelUpload()
+            }
         }
     }
 
@@ -205,9 +204,9 @@ class ChatTubeViewModel(application: Application) : AndroidViewModel(application
         _aiCaptionState.value = ""
     }
 
-    fun updateUserProfile(name: String, bio: String) {
+    fun updateUserProfile(name: String, bio: String, serverRegion: String) {
         viewModelScope.launch {
-            repository.updateUserProfile(name, bio)
+            repository.updateUserProfile(name, bio, serverRegion)
         }
     }
 
@@ -241,6 +240,24 @@ class ChatTubeViewModel(application: Application) : AndroidViewModel(application
     fun logout() {
         viewModelScope.launch {
             repository.logoutUser()
+        }
+    }
+
+    fun logoutAll() {
+        viewModelScope.launch {
+            repository.logoutAll()
+        }
+    }
+
+    fun switchActiveAccount(username: String) {
+        viewModelScope.launch {
+            repository.switchActiveAccount(username)
+        }
+    }
+
+    fun setProfileImage(uri: String) {
+        viewModelScope.launch {
+            repository.updateProfilePic(uri)
         }
     }
 }

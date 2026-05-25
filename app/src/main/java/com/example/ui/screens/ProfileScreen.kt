@@ -27,18 +27,55 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.ui.viewmodel.ChatTubeViewModel
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.result.PickVisualMediaRequest
+import com.canhub.cropper.CropImageContract
+import com.canhub.cropper.CropImageContractOptions
+import com.canhub.cropper.CropImageOptions
+
 @Composable
 fun ProfileScreen(
     viewModel: ChatTubeViewModel,
+    onOpenSettings: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val userStats by viewModel.userStats.collectAsState()
     val posts by viewModel.posts.collectAsState()
+    val loggedInAccounts by viewModel.loggedInAccounts.collectAsState()
     
     // Edit profile modal states
     var showEditProfileDialog by remember { mutableStateOf(false) }
+    var showAccountSwitcher by remember { mutableStateOf(false) }
     var editNameInput by remember { mutableStateOf("") }
     var editBioInput by remember { mutableStateOf("") }
+    var editServerRegion by remember { mutableStateOf("") }
+
+    val imageCropLauncher = rememberLauncherForActivityResult(CropImageContract()) { result ->
+        if (result.isSuccessful) {
+            val uri = result.uriContent?.toString()
+            if (uri != null) {
+                viewModel.setProfileImage(uri)
+            }
+        }
+    }
+
+    val imagePickerLauncher = rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+        if (uri != null) {
+            val options = CropImageContractOptions(
+                uri = uri,
+                cropImageOptions = CropImageOptions(
+                    imageSourceIncludeGallery = true,
+                    imageSourceIncludeCamera = false,
+                    circleCropEnabled = true,
+                    aspectRatioX = 1,
+                    aspectRatioY = 1,
+                    fixAspectRatio = true
+                )
+            )
+            imageCropLauncher.launch(options)
+        }
+    }
 
     // Filter our posts vs other accounts
     val myPosts = posts.filter { it.username == (userStats?.username ?: "chattuber_pro") }
@@ -60,6 +97,7 @@ fun ProfileScreen(
                                 if (userStats != null) {
                                     editNameInput = userStats!!.name
                                     editBioInput = userStats!!.bio
+                                    editServerRegion = userStats!!.serverRegion
                                     showEditProfileDialog = true
                                 }
                             },
@@ -71,15 +109,13 @@ fun ProfileScreen(
                         }
 
                         IconButton(
-                            onClick = {
-                                viewModel.logout()
-                            },
+                            onClick = onOpenSettings,
                             modifier = Modifier
                                 .clip(CircleShape)
-                                .background(Color.Red.copy(alpha = 0.15f))
-                                .testTag("logout_button")
+                                .background(Color.White.copy(alpha = 0.15f))
+                                .testTag("settings_button")
                         ) {
-                            Icon(Icons.Default.ExitToApp, contentDescription = "Exit Studio", tint = Color.Red)
+                            Icon(Icons.Default.Menu, contentDescription = "Settings", tint = Color.White)
                         }
                     }
                 }
@@ -105,24 +141,49 @@ fun ProfileScreen(
                         avatarIndex = 0,
                         size = 76.dp,
                         hasStory = true,
-                        storyViewed = false
+                        storyViewed = false,
+                        profilePicUri = userStats?.profilePicUri,
+                        onClick = {
+                            imagePickerLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+                        }
                     )
                     
                     Spacer(modifier = Modifier.width(18.dp))
                     
                     Column(modifier = Modifier.weight(1f)) {
-                        Text(
-                            text = userStats?.name ?: "ChatTuber Premium",
-                            color = Color.White,
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.Black
-                        )
-                        Text(
-                            text = "@" + (userStats?.username ?: "chattuber_pro"),
-                            color = ChatTubeColors.Yellow,
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.Bold
-                        )
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(
+                                text = userStats?.name ?: "ChatTuber Premium",
+                                color = Color.White,
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.Black
+                            )
+                            if (userStats?.isVip == true) {
+                                Spacer(modifier = Modifier.width(6.dp))
+                                Box(
+                                    modifier = Modifier
+                                        .background(
+                                            brush = Brush.horizontalGradient(listOf(Color(0xFFFFD700), Color(0xFFFFA500))),
+                                            shape = RoundedCornerShape(4.dp)
+                                        )
+                                        .padding(horizontal = 6.dp, vertical = 2.dp)
+                                ) {
+                                    Text("VIP", color = Color.Black, fontSize = 10.sp, fontWeight = FontWeight.ExtraBold)
+                                }
+                            }
+                        }
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.clickable { showAccountSwitcher = true }
+                        ) {
+                            Text(
+                                text = "@" + (userStats?.username ?: "chattuber_pro") + " • " + (userStats?.coins ?: 0) + " Coins",
+                                color = ChatTubeColors.Yellow,
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                            Icon(Icons.Default.KeyboardArrowDown, contentDescription = "Switch Account", tint = ChatTubeColors.Yellow, modifier = Modifier.size(16.dp))
+                        }
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(4.dp),
@@ -238,6 +299,33 @@ fun ProfileScreen(
                     color = Color.White,
                     fontSize = 12.sp,
                     lineHeight = 16.sp,
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+
+                // Server Info
+                Row(
+                    modifier = Modifier.padding(top = 8.dp, bottom = 4.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Dns,
+                        contentDescription = "Server",
+                        tint = Color.Gray,
+                        modifier = Modifier.size(14.dp)
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        text = "NETWORK SERVER",
+                        color = Color.Gray,
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+                Text(
+                    text = "${userStats?.serverRegion ?: "Asia-South (India)"}  🟢 Active",
+                    color = Color.Green.copy(alpha = 0.8f),
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
 
@@ -364,6 +452,21 @@ fun ProfileScreen(
                                     maxLines = 3
                                 )
                             }
+                            
+                            Column {
+                                Text("NETWORK SERVER", color = Color.Gray, fontSize = 10.sp, fontWeight = FontWeight.Bold)
+                                OutlinedTextField(
+                                    value = editServerRegion,
+                                    onValueChange = { editServerRegion = it },
+                                    colors = OutlinedTextFieldDefaults.colors(
+                                        focusedTextColor = Color.Green,
+                                        unfocusedTextColor = Color.Green,
+                                        focusedBorderColor = ChatTubeColors.Yellow,
+                                        unfocusedBorderColor = ChatTubeColors.BorderDark
+                                    ),
+                                    modifier = Modifier.fillMaxWidth()
+                                )
+                            }
 
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
@@ -379,13 +482,67 @@ fun ProfileScreen(
 
                                 Button(
                                     onClick = {
-                                        viewModel.updateUserProfile(editNameInput, editBioInput)
+                                        viewModel.updateUserProfile(editNameInput, editBioInput, editServerRegion)
                                         showEditProfileDialog = false
                                     },
                                     modifier = Modifier.weight(1.2f),
                                     colors = ButtonDefaults.buttonColors(containerColor = ChatTubeColors.Yellow)
                                 ) {
                                     Text("Save Changes", color = Color.Black, fontWeight = FontWeight.Bold)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            // Account Switcher Modal Overlay
+            if (showAccountSwitcher) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.Black.copy(alpha = 0.7f))
+                        .clickable { showAccountSwitcher = false },
+                    contentAlignment = Alignment.BottomCenter
+                ) {
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable(enabled = false, onClick = {}),
+                        colors = CardDefaults.cardColors(containerColor = ChatTubeColors.SurfaceDark),
+                        shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
+                        border = BorderStroke(1.dp, ChatTubeColors.BorderDark)
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(20.dp),
+                            verticalArrangement = Arrangement.spacedBy(14.dp)
+                        ) {
+                            Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                                Box(modifier = Modifier.width(40.dp).height(4.dp).background(Color.Gray, CircleShape))
+                            }
+                            Text("Switch Account", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 16.sp, modifier = Modifier.padding(bottom = 8.dp))
+                            
+                            loggedInAccounts.forEach { account ->
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clickable {
+                                            viewModel.switchActiveAccount(account.username)
+                                            showAccountSwitcher = false
+                                        }
+                                        .padding(vertical = 12.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Box(
+                                        modifier = Modifier.size(40.dp).clip(CircleShape).background(Color.Gray.copy(alpha = 0.3f)),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Icon(Icons.Default.Person, contentDescription = null, tint = Color.White)
+                                    }
+                                    Spacer(modifier = Modifier.width(16.dp))
+                                    Text(account.username, color = Color.White, fontSize = 16.sp, modifier = Modifier.weight(1f))
+                                    if (account.username == userStats?.username) {
+                                        Icon(Icons.Default.CheckCircle, contentDescription = "Active", tint = ChatTubeColors.Pink)
+                                    }
                                 }
                             }
                         }

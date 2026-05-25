@@ -12,6 +12,7 @@ class ChatTubeRepository(
     private val messageDao: MessageDao
 ) {
     val userStats: Flow<UserStatsEntity?> = userStatsDao.getUserStatsFlow()
+    val loggedInAccounts: Flow<List<UserStatsEntity>> = userStatsDao.getLoggedInAccountsFlow()
     val posts: Flow<List<PostEntity>> = postDao.getAllPosts()
     val stories: Flow<List<StoryEntity>> = storyDao.getAllStories()
     val messages: Flow<List<MessageEntity>> = messageDao.getAllMessages()
@@ -38,9 +39,21 @@ class ChatTubeRepository(
         ))
     }
 
-    suspend fun updateUserProfile(name: String, bio: String) {
+    suspend fun gamifyReelUpload() {
         val current = userStatsDao.getUserStats() ?: return
-        userStatsDao.updateUserStats(current.copy(name = name, bio = bio))
+        val newCoins = current.coins + 1
+        val newIsVip = current.isVip || newCoins >= 400
+        userStatsDao.updateUserStats(current.copy(coins = newCoins, isVip = newIsVip))
+    }
+
+    suspend fun updateUserProfile(name: String, bio: String, serverRegion: String) {
+        val current = userStatsDao.getUserStats() ?: return
+        userStatsDao.updateUserStats(current.copy(name = name, bio = bio, serverRegion = serverRegion))
+    }
+
+    suspend fun updateProfilePic(uri: String) {
+        val current = userStatsDao.getUserStats() ?: return
+        userStatsDao.updateUserStats(current.copy(profilePicUri = uri))
     }
 
     suspend fun signupUser(phone: String, passwordHash: String, username: String, name: String, bio: String): Boolean {
@@ -50,7 +63,7 @@ class ChatTubeRepository(
              return false // Already taken
         }
 
-        userStatsDao.logoutAll()
+        userStatsDao.clearActiveAccounts()
 
         userStatsDao.insertUserStats(UserStatsEntity(
             username = username,
@@ -58,7 +71,8 @@ class ChatTubeRepository(
             phone = phone,
             passwordHash = passwordHash,
             bio = bio,
-            isLoggedIn = true
+            isLoggedIn = true,
+            isActive = true
         ))
         return true
     }
@@ -66,14 +80,26 @@ class ChatTubeRepository(
     suspend fun loginUser(identifier: String, passwordHash: String): Boolean {
         val matchingUser = userStatsDao.getUserByUsername(identifier) ?: userStatsDao.getUserByPhone(identifier)
         if (matchingUser != null && matchingUser.passwordHash == passwordHash) {
-             userStatsDao.logoutAll()
-             userStatsDao.updateUserStats(matchingUser.copy(isLoggedIn = true))
+             userStatsDao.clearActiveAccounts()
+             userStatsDao.updateUserStats(matchingUser.copy(isLoggedIn = true, isActive = true))
              return true
         }
         return false
     }
 
     suspend fun logoutUser() {
+        val current = userStatsDao.getUserStats()
+        if (current != null) {
+            userStatsDao.logoutUser(current.username)
+        }
+    }
+
+    suspend fun switchActiveAccount(username: String) {
+        userStatsDao.clearActiveAccounts()
+        userStatsDao.setActiveAccount(username)
+    }
+
+    suspend fun logoutAll() {
         userStatsDao.logoutAll()
     }
 

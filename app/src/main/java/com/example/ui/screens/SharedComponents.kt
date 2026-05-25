@@ -19,7 +19,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
+import coil.compose.AsyncImage
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -224,6 +226,7 @@ fun UserAvatar(
     modifier: Modifier = Modifier,
     hasStory: Boolean = false,
     storyViewed: Boolean = false,
+    profilePicUri: String? = null,
     onClick: (() -> Unit)? = null
 ) {
     // Determine gradient list based on avatar index for diverse fun branding
@@ -246,9 +249,9 @@ fun UserAvatar(
                 } else {
                     Brush.linearGradient(ChatTubeColors.Instagradient)
                 }
-                it.border(2.dp, storyColor, CircleShape).padding(3.dp)
+                it.border(2.dp, storyColor, CircleShape).padding(4.dp)
             } else {
-                it
+                it.border(2.dp, Color.White.copy(alpha = 0.8f), CircleShape).padding(2.dp)
             }
         }
         .clip(CircleShape)
@@ -261,13 +264,22 @@ fun UserAvatar(
         modifier = outerModifier,
         contentAlignment = Alignment.Center
     ) {
-        val initial = if (username.isNotEmpty()) username.uppercase().take(1) else "U"
-        Text(
-            text = initial,
-            color = Color.White,
-            fontSize = (size.value * 0.45f).sp,
-            fontWeight = FontWeight.Bold
-        )
+        if (!profilePicUri.isNullOrEmpty()) {
+            AsyncImage(
+                model = profilePicUri,
+                contentDescription = "$username's profile picture",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize().clip(CircleShape)
+            )
+        } else {
+            val initial = if (username.isNotEmpty()) username.uppercase().take(1) else "U"
+            Text(
+                text = initial,
+                color = Color.White,
+                fontSize = (size.value * 0.45f).sp,
+                fontWeight = FontWeight.Bold
+            )
+        }
     }
 }
 

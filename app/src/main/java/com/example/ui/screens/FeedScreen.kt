@@ -47,6 +47,7 @@ fun FeedScreen(
 ) {
     val posts by viewModel.posts.collectAsState()
     val stories by viewModel.stories.collectAsState()
+    val userStats by viewModel.userStats.collectAsState()
     val scope = rememberCoroutineScope()
     
     // Segmented tab state for Feed vs Vertical Reels
@@ -269,7 +270,8 @@ fun FeedScreen(
                             verticalArrangement = Arrangement.spacedBy(20.dp)
                         ) {
                             // User Profile Avatar Circle
-                            UserAvatar(username = currentReel.username, avatarIndex = currentReel.userAvatarIndex, size = 42.dp)
+                            val reelProfilePic = if (currentReel.username == userStats?.username) userStats?.profilePicUri else null
+                            UserAvatar(username = currentReel.username, avatarIndex = currentReel.userAvatarIndex, size = 42.dp, profilePicUri = reelProfilePic)
 
                             // Heart React
                             Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -321,12 +323,27 @@ fun FeedScreen(
                                 .padding(16.dp),
                             verticalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
-                            Text(
-                                text = "@${currentReel.username}",
-                                color = Color.White,
-                                fontWeight = FontWeight.Black,
-                                fontSize = 15.sp
-                            )
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text(
+                                    text = "@${currentReel.username}",
+                                    color = Color.White,
+                                    fontWeight = FontWeight.Black,
+                                    fontSize = 15.sp
+                                )
+                                if (currentReel.username == userStats?.username && userStats?.isVip == true) {
+                                    Spacer(modifier = Modifier.width(6.dp))
+                                    Box(
+                                        modifier = Modifier
+                                            .background(
+                                                brush = Brush.horizontalGradient(listOf(Color(0xFFFFD700), Color(0xFFFFA500))),
+                                                shape = RoundedCornerShape(4.dp)
+                                            )
+                                            .padding(horizontal = 6.dp, vertical = 2.dp)
+                                    ) {
+                                        Text("VIP", color = Color.Black, fontSize = 10.sp, fontWeight = FontWeight.ExtraBold)
+                                    }
+                                }
+                            }
                             Text(
                                 text = currentReel.caption,
                                 color = Color.White.copy(alpha = 0.9f),
@@ -542,7 +559,8 @@ fun PostItemCard(
                     .padding(12.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                UserAvatar(username = post.username, avatarIndex = post.userAvatarIndex, size = 38.dp)
+                val postProfilePic = if (post.username == userStats?.username) userStats?.profilePicUri else null
+                UserAvatar(username = post.username, avatarIndex = post.userAvatarIndex, size = 38.dp, profilePicUri = postProfilePic)
                 Spacer(modifier = Modifier.width(10.dp))
                 Column(modifier = Modifier.weight(1f)) {
                     Row(verticalAlignment = Alignment.CenterVertically) {

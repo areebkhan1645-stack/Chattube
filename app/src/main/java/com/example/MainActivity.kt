@@ -46,20 +46,24 @@ class MainActivity : ComponentActivity() {
                 val viewModel: ChatTubeViewModel = viewModel()
                 val userStats by viewModel.userStats.collectAsState()
                 var currentTab by remember { mutableStateOf(ChatTubeTab.FEED) }
+                var isSettingsOpen by remember { mutableStateOf(false) }
+                var isAddingAccount by remember { mutableStateOf(false) }
 
-                if (userStats == null) {
-                    // Seed/cold-start spinner
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(ChatTubeColors.DarkBackground),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator(color = ChatTubeColors.Pink)
+                LaunchedEffect(userStats?.username) {
+                    if (userStats?.isLoggedIn == true) {
+                        isAddingAccount = false
                     }
-                } else if (!userStats!!.isLoggedIn) {
+                }
+
+                if ((userStats == null || !userStats!!.isLoggedIn) || isAddingAccount) {
                     // Instagram-style Secure signup and login screen interceptor
                     AuthScreen(viewModel = viewModel)
+                } else if (isSettingsOpen) {
+                    SettingsScreen(
+                        viewModel = viewModel,
+                        onClose = { isSettingsOpen = false },
+                        onAddAccount = { isAddingAccount = true }
+                    )
                 } else {
                     Scaffold(
                         modifier = Modifier.fillMaxSize(),
@@ -170,6 +174,7 @@ class MainActivity : ComponentActivity() {
                                     )
                                     ChatTubeTab.PROFILE -> ProfileScreen(
                                         viewModel = viewModel,
+                                        onOpenSettings = { isSettingsOpen = true },
                                         modifier = Modifier.padding(bottom = innerPadding.calculateBottomPadding())
                                     )
                                 }

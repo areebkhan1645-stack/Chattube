@@ -5,11 +5,14 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface UserStatsDao {
-    @Query("SELECT * FROM user_stats WHERE isLoggedIn = 1 LIMIT 1")
+    @Query("SELECT * FROM user_stats WHERE isActive = 1 LIMIT 1")
     fun getUserStatsFlow(): Flow<UserStatsEntity?>
 
-    @Query("SELECT * FROM user_stats WHERE isLoggedIn = 1 LIMIT 1")
+    @Query("SELECT * FROM user_stats WHERE isActive = 1 LIMIT 1")
     suspend fun getUserStats(): UserStatsEntity?
+
+    @Query("SELECT * FROM user_stats WHERE isLoggedIn = 1")
+    fun getLoggedInAccountsFlow(): Flow<List<UserStatsEntity>>
 
     @Query("SELECT * FROM user_stats WHERE username = :username LIMIT 1")
     suspend fun getUserByUsername(username: String): UserStatsEntity?
@@ -23,8 +26,17 @@ interface UserStatsDao {
     @Update
     suspend fun updateUserStats(stats: UserStatsEntity)
     
-    @Query("UPDATE user_stats SET isLoggedIn = 0")
+    @Query("UPDATE user_stats SET isActive = 0")
+    suspend fun clearActiveAccounts()
+
+    @Query("UPDATE user_stats SET isActive = 0, isLoggedIn = 0")
     suspend fun logoutAll()
+
+    @Query("UPDATE user_stats SET isActive = 1 WHERE username = :username")
+    suspend fun setActiveAccount(username: String)
+
+    @Query("UPDATE user_stats SET isActive = 0, isLoggedIn = 0 WHERE username = :username")
+    suspend fun logoutUser(username: String)
 }
 
 @Dao

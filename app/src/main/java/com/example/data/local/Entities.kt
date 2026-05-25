@@ -14,7 +14,12 @@ data class UserStatsEntity(
     val snapScore: Int = 0,
     val tubeStreak: Int = 0,
     val nextStreakHours: Int = 6,
-    val isLoggedIn: Boolean = false
+    val serverRegion: String = "Asia-South (India)",
+    val coins: Int = 0,
+    val isVip: Boolean = false,
+    val profilePicUri: String? = null,
+    val isLoggedIn: Boolean = false,
+    val isActive: Boolean = false
 )
 
 @Entity(tableName = "posts")
