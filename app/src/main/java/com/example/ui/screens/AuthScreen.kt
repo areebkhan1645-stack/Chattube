@@ -13,7 +13,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Phone
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -38,9 +41,13 @@ fun AuthScreen(
     
     // Form Inputs
     var usernameInput by remember { mutableStateOf("") }
+    var emailInput by remember { mutableStateOf("") }
+    var phoneInput by remember { mutableStateOf("") }
+    var passwordInput by remember { mutableStateOf("") }
     var nameInput by remember { mutableStateOf("") }
     var bioInput by remember { mutableStateOf("") }
     var errorMsg by remember { mutableStateOf("") }
+    val authErrorMsg by viewModel.authError.collectAsState()
 
     val logoBrush = Brush.linearGradient(ChatTubeColors.Instagradient)
 
@@ -106,9 +113,10 @@ fun AuthScreen(
                         fontWeight = FontWeight.Bold
                     )
 
-                    if (errorMsg.isNotEmpty()) {
+                    val displayError = authErrorMsg ?: errorMsg
+                    if (displayError.isNotEmpty()) {
                         Text(
-                            text = errorMsg,
+                            text = displayError,
                             color = Color.Red,
                             fontSize = 12.sp,
                             fontWeight = FontWeight.Bold,
@@ -151,29 +159,62 @@ fun AuthScreen(
                         )
 
                         OutlinedTextField(
-                            value = bioInput,
-                            onValueChange = { bioInput = it; errorMsg = "" },
-                            label = { Text("Short Studio Bio") },
-                            placeholder = { Text("Tell the world your tube style...") },
-                            leadingIcon = { Icon(Icons.Default.Info, contentDescription = "Bio") },
-                            modifier = Modifier.fillMaxWidth().testTag("signup_bio_input"),
+                            value = phoneInput,
+                            onValueChange = { phoneInput = it; errorMsg = ""; viewModel.clearAuthError() },
+                            label = { Text("Mobile Number") },
+                            placeholder = { Text("+1 234 567 890") },
+                            leadingIcon = { Icon(Icons.Default.Phone, contentDescription = "Phone") },
+                            modifier = Modifier.fillMaxWidth().testTag("signup_phone_input"),
                             colors = OutlinedTextFieldDefaults.colors(
                                 focusedTextColor = Color.White,
                                 unfocusedTextColor = Color.White,
                                 focusedBorderColor = ChatTubeColors.Pink,
                                 unfocusedBorderColor = ChatTubeColors.BorderDark
                             ),
-                            shape = RoundedCornerShape(12.dp),
-                            maxLines = 3
+                            shape = RoundedCornerShape(12.dp)
+                        )
+
+                        OutlinedTextField(
+                            value = passwordInput,
+                            onValueChange = { passwordInput = it; errorMsg = "" },
+                            label = { Text("Password") },
+                            placeholder = { Text("********") },
+                            visualTransformation = PasswordVisualTransformation(),
+                            leadingIcon = { Icon(Icons.Default.Lock, contentDescription = "Password") },
+                            modifier = Modifier.fillMaxWidth().testTag("signup_password_input"),
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedTextColor = Color.White,
+                                unfocusedTextColor = Color.White,
+                                focusedBorderColor = ChatTubeColors.Pink,
+                                unfocusedBorderColor = ChatTubeColors.BorderDark
+                            ),
+                            shape = RoundedCornerShape(12.dp)
                         )
                     } else {
                         OutlinedTextField(
                             value = usernameInput,
-                            onValueChange = { usernameInput = it.lowercase().trim(); errorMsg = "" },
-                            label = { Text("Enter Username") },
-                            placeholder = { Text("chattuber_pro") },
-                            leadingIcon = { Icon(Icons.Default.Person, contentDescription = "Username") },
+                            onValueChange = { usernameInput = it.lowercase().trim(); errorMsg = ""; viewModel.clearAuthError() },
+                            label = { Text("Mobile Number or Username") },
+                            placeholder = { Text("sarah_travels or +1 ...") },
+                            leadingIcon = { Icon(Icons.Default.Person, contentDescription = "Identifier") },
                             modifier = Modifier.fillMaxWidth().testTag("username_input"),
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedTextColor = Color.White,
+                                unfocusedTextColor = Color.White,
+                                focusedBorderColor = ChatTubeColors.Yellow,
+                                unfocusedBorderColor = ChatTubeColors.BorderDark
+                            ),
+                            shape = RoundedCornerShape(12.dp)
+                        )
+                        
+                        OutlinedTextField(
+                            value = passwordInput,
+                            onValueChange = { passwordInput = it; errorMsg = "" },
+                            label = { Text("Password") },
+                            visualTransformation = PasswordVisualTransformation(),
+                            placeholder = { Text("********") },
+                            leadingIcon = { Icon(Icons.Default.Lock, contentDescription = "Password") },
+                            modifier = Modifier.fillMaxWidth().testTag("password_input"),
                             colors = OutlinedTextFieldDefaults.colors(
                                 focusedTextColor = Color.White,
                                 unfocusedTextColor = Color.White,
@@ -188,20 +229,22 @@ fun AuthScreen(
                     Button(
                         onClick = {
                             if (isSignUpMode) {
-                                if (nameInput.trim().isEmpty() || usernameInput.trim().isEmpty()) {
-                                    errorMsg = "Full Name and Handle cannot be empty."
+                                if (nameInput.trim().isEmpty() || usernameInput.trim().isEmpty() || passwordInput.isEmpty()) {
+                                    errorMsg = "Name, Handle, and Password are required."
                                 } else {
                                     viewModel.signup(
+                                        phone = phoneInput.trim(),
+                                        passwordHash = passwordInput,
                                         username = usernameInput,
                                         name = nameInput,
                                         bio = if (bioInput.trim().isEmpty()) "Tubes and Snaps Creator! ✨" else bioInput
                                     )
                                 }
                             } else {
-                                if (usernameInput.trim().isEmpty()) {
-                                    errorMsg = "Please enter your username handle."
+                                if (usernameInput.trim().isEmpty() || passwordInput.isEmpty()) {
+                                    errorMsg = "Please enter your identifier and password."
                                 } else {
-                                    viewModel.login(usernameInput)
+                                    viewModel.login(usernameInput, passwordInput)
                                 }
                             }
                         },
@@ -230,7 +273,7 @@ fun AuthScreen(
                                     fontSize = 15.sp
                                 )
                                 Icon(
-                                    imageVector = Icons.Default.ArrowForward,
+                                    imageVector = Icons.AutoMirrored.Filled.ArrowForward,
                                     contentDescription = "Forward Action",
                                     tint = if (isSignUpMode) Color.White else Color.Black
                                 )
@@ -257,52 +300,6 @@ fun AuthScreen(
             }
 
             Spacer(modifier = Modifier.height(24.dp))
-
-            // Demo Shortcut Panel - incredibly friendly for testing
-            Card(
-                colors = CardDefaults.cardColors(containerColor = ChatTubeColors.SurfaceDark.copy(alpha = 0.5f)),
-                border = androidx.compose.foundation.BorderStroke(1.dp, ChatTubeColors.BorderDark.copy(alpha = 0.5f)),
-                shape = RoundedCornerShape(16.dp),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Column(
-                    modifier = Modifier.padding(16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Text(
-                        "🔒 INSTANT DEV ACCESS",
-                        color = Color.Gray,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 10.sp,
-                        letterSpacing = 1.sp
-                    )
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Button(
-                            onClick = {
-                                viewModel.login("chattuber_pro")
-                            },
-                            colors = ButtonDefaults.buttonColors(containerColor = Color.White.copy(alpha = 0.08f)),
-                            modifier = Modifier.weight(1f).height(36.dp)
-                        ) {
-                            Text("Fast login (@pro)", color = Color.White, fontSize = 11.sp, fontWeight = FontWeight.Bold)
-                        }
-                        
-                        Button(
-                            onClick = {
-                                viewModel.signup("chattuber_pro", "ChatTuber Premium", "Creator & Visual Philosopher 📸✨ Adding a splash of tube to my snaps!")
-                            },
-                            colors = ButtonDefaults.buttonColors(containerColor = Color.White.copy(alpha = 0.08f)),
-                            modifier = Modifier.weight(1f).height(36.dp)
-                        ) {
-                            Text("Reset & Seed", color = Color.White, fontSize = 11.sp, fontWeight = FontWeight.Bold)
-                        }
-                    }
-                }
-            }
         }
     }
 }

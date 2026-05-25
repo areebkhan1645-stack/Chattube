@@ -5,13 +5,14 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "user_stats")
 data class UserStatsEntity(
-    @PrimaryKey val id: Int = 1, // Singleton row for the current user
+    @PrimaryKey val username: String,
     val name: String = "You",
-    val username: String = "chattuber_pro",
-    val bio: String = "Creator & Visual Philosopher 📸✨ Adding a splash of tube to my snaps!",
+    val phone: String = "",
+    val passwordHash: String = "",
+    val bio: String = "Creator & Visual Philosopher 📸✨",
     val avatarUrl: String = "",
-    val snapScore: Int = 12450,
-    val tubeStreak: Int = 18,
+    val snapScore: Int = 0,
+    val tubeStreak: Int = 0,
     val nextStreakHours: Int = 6,
     val isLoggedIn: Boolean = false
 )

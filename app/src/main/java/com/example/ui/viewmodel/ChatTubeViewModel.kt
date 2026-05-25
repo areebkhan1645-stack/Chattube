@@ -211,15 +211,30 @@ class ChatTubeViewModel(application: Application) : AndroidViewModel(application
         }
     }
 
-    fun signup(username: String, name: String, bio: String) {
+    private val _authError = MutableStateFlow<String?>(null)
+    val authError: StateFlow<String?> = _authError.asStateFlow()
+
+    fun clearAuthError() {
+        _authError.value = null
+    }
+
+    fun signup(phone: String, passwordHash: String, username: String, name: String, bio: String) {
         viewModelScope.launch {
-            repository.signupUser(username, name, bio)
+            _authError.value = null
+            val success = repository.signupUser(phone, passwordHash, username, name, bio)
+            if (!success) {
+                _authError.value = "Username or phone number already taken."
+            }
         }
     }
 
-    fun login(username: String) {
+    fun login(identifier: String, passwordHash: String) {
         viewModelScope.launch {
-            repository.loginUser(username)
+            _authError.value = null
+            val success = repository.loginUser(identifier, passwordHash)
+            if (!success) {
+                _authError.value = "Invalid credentials."
+            }
         }
     }
 

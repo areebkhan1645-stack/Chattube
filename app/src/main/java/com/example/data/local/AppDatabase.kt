@@ -10,7 +10,7 @@ import androidx.room.RoomDatabase
         StoryEntity::class,
         MessageEntity::class
     ],
-    version = 1,
+    version = 4,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {

@@ -5,17 +5,26 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface UserStatsDao {
-    @Query("SELECT * FROM user_stats WHERE id = 1 LIMIT 1")
+    @Query("SELECT * FROM user_stats WHERE isLoggedIn = 1 LIMIT 1")
     fun getUserStatsFlow(): Flow<UserStatsEntity?>
 
-    @Query("SELECT * FROM user_stats WHERE id = 1 LIMIT 1")
+    @Query("SELECT * FROM user_stats WHERE isLoggedIn = 1 LIMIT 1")
     suspend fun getUserStats(): UserStatsEntity?
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Query("SELECT * FROM user_stats WHERE username = :username LIMIT 1")
+    suspend fun getUserByUsername(username: String): UserStatsEntity?
+
+    @Query("SELECT * FROM user_stats WHERE phone = :phone LIMIT 1")
+    suspend fun getUserByPhone(phone: String): UserStatsEntity?
+
+    @Insert(onConflict = OnConflictStrategy.ABORT)
     suspend fun insertUserStats(stats: UserStatsEntity)
 
     @Update
     suspend fun updateUserStats(stats: UserStatsEntity)
+    
+    @Query("UPDATE user_stats SET isLoggedIn = 0")
+    suspend fun logoutAll()
 }
 
 @Dao
