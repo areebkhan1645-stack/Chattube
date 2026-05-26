@@ -96,8 +96,8 @@ fun ExploreScreen(
                         }
                     },
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedTextColor = Color.White,
-                        unfocusedTextColor = Color.White,
+                        focusedTextColor = ChatTubeColors.TextPrimary,
+                        unfocusedTextColor = ChatTubeColors.TextPrimary,
                         focusedContainerColor = ChatTubeColors.SurfaceDark,
                         unfocusedContainerColor = ChatTubeColors.SurfaceDark,
                         focusedBorderColor = ChatTubeColors.Pink,
@@ -136,7 +136,7 @@ fun ExploreScreen(
                         ) {
                             Text(
                                 text = category,
-                                color = if (isSelected) Color.White else Color.LightGray,
+                                color = if (isSelected) ChatTubeColors.TextPrimary else Color.LightGray,
                                 fontSize = 12.sp,
                                 fontWeight = if (isSelected) FontWeight.Black else FontWeight.Normal
                             )
@@ -161,7 +161,7 @@ fun ExploreScreen(
                 ) {
                     Icon(Icons.Default.Search, contentDescription = "No results", tint = Color.Gray, modifier = Modifier.size(64.dp))
                     Spacer(modifier = Modifier.height(16.dp))
-                    Text("No visual matches found", color = Color.White, fontWeight = FontWeight.Bold)
+                    Text("No visual matches found", color = ChatTubeColors.TextPrimary, fontWeight = FontWeight.Bold)
                     Text("Try exploring another tag category or lens vibe!", color = Color.Gray, fontSize = 11.sp)
                 }
             } else {
@@ -219,7 +219,7 @@ fun ExploreScreen(
                             ) {
                                 Text(
                                     text = "@" + post.username,
-                                    color = Color.White,
+                                    color = ChatTubeColors.TextPrimary,
                                     fontWeight = FontWeight.Bold,
                                     fontSize = 11.sp,
                                     maxLines = 1
@@ -281,7 +281,7 @@ fun ExploreScreen(
                                 ) {
                                     UserAvatar(username = post.username, avatarIndex = post.userAvatarIndex, size = 36.dp)
                                     Column {
-                                        Text(post.username, color = Color.White, fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                                        Text(post.username, color = ChatTubeColors.TextPrimary, fontWeight = FontWeight.Bold, fontSize = 14.sp)
                                         Text("Reel view • Applied ${post.filterApplied}", color = Color.LightGray, fontSize = 10.sp)
                                     }
                                     Spacer(modifier = Modifier.weight(1f))
@@ -292,7 +292,7 @@ fun ExploreScreen(
                                             .clip(CircleShape)
                                             .background(Color.Black.copy(alpha = 0.3f))
                                     ) {
-                                        Icon(Icons.Default.Close, contentDescription = "Close preview", tint = Color.White, modifier = Modifier.size(16.dp))
+                                        Icon(Icons.Default.Close, contentDescription = "Close preview", tint = ChatTubeColors.TextPrimary, modifier = Modifier.size(16.dp))
                                     }
                                 }
 
@@ -306,7 +306,7 @@ fun ExploreScreen(
                                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                         Text(
                                             text = if (post.mediaType == "TUBE") "🎬 ACTIVE VIDEO REEL 🎬" else "📸 HIGH FIDELITY SNAP 📸",
-                                            color = Color.White.copy(alpha = 0.6f),
+                                            color = ChatTubeColors.TextPrimary.copy(alpha = 0.6f),
                                             fontSize = 11.sp,
                                             fontWeight = FontWeight.Bold
                                         )
@@ -317,8 +317,8 @@ fun ExploreScreen(
                                             modifier = Modifier
                                                 .size(120.dp)
                                                 .clip(RoundedCornerShape(60.dp))
-                                                .background(Color.White.copy(alpha = 0.1f))
-                                                .border(2.dp, Color.White, RoundedCornerShape(60.dp)),
+                                                .background(ChatTubeColors.TextPrimary.copy(alpha = 0.1f))
+                                                .border(2.dp, ChatTubeColors.TextPrimary, RoundedCornerShape(60.dp)),
                                             contentAlignment = Alignment.Center
                                         ) {
                                             Icon(
@@ -340,7 +340,7 @@ fun ExploreScreen(
                                     ) {
                                         Text(
                                             text = post.caption,
-                                            color = Color.White,
+                                            color = ChatTubeColors.TextPrimary,
                                             fontSize = 13.sp,
                                             modifier = Modifier.padding(12.dp)
                                         )
@@ -361,7 +361,7 @@ fun ExploreScreen(
                                             },
                                             colors = ButtonDefaults.buttonColors(containerColor = if (post.isLiked) ChatTubeColors.Pink else Color.Black.copy(alpha = 0.5f))
                                         ) {
-                                            Text(if (post.isLiked) "❤️ Liked (${post.likesCount})" else "🤍 Like (${post.likesCount})", color = Color.White, fontWeight = FontWeight.Bold)
+                                            Text(if (post.isLiked) "❤️ Liked (${post.likesCount})" else "🤍 Like (${post.likesCount})", color = ChatTubeColors.TextPrimary, fontWeight = FontWeight.Bold)
                                         }
 
                                         Text(

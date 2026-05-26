@@ -70,7 +70,7 @@ fun ChatScreen(
                 subtitle = "ChatRoom Logs",
                 trailingContent = {
                     IconButton(onClick = {}) {
-                        Icon(Icons.Default.GroupAdd, contentDescription = "Add Friend", tint = Color.White)
+                        Icon(Icons.Default.GroupAdd, contentDescription = "Add Friend", tint = ChatTubeColors.TextPrimary)
                     }
                 }
             )
@@ -131,14 +131,14 @@ fun ChatScreen(
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 IconButton(onClick = { activeChattingFriendName = null }) {
-                                    Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = Color.White)
+                                    Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = ChatTubeColors.TextPrimary)
                                 }
                                 
                                 UserAvatar(username = friend, avatarIndex = friend.hashCode(), size = 36.dp)
                                 Spacer(modifier = Modifier.width(10.dp))
                                 
                                 Column(modifier = Modifier.weight(1f)) {
-                                    Text(friend, color = Color.White, fontWeight = FontWeight.Bold, fontSize = 15.sp)
+                                    Text(friend, color = ChatTubeColors.TextPrimary, fontWeight = FontWeight.Bold, fontSize = 15.sp)
                                     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                                         Box(modifier = Modifier.size(6.dp).clip(CircleShape).background(Color(0xFF39FF14)))
                                         Text("Active in Chattube", color = Color.Gray, fontSize = 10.sp)
@@ -147,7 +147,7 @@ fun ChatScreen(
 
                                 Row {
                                     IconButton(onClick = {}) {
-                                        Icon(Icons.Default.Phone, contentDescription = "Dial", tint = Color.White)
+                                        Icon(Icons.Default.Phone, contentDescription = "Dial", tint = ChatTubeColors.TextPrimary)
                                     }
                                     IconButton(onClick = {}) {
                                         Icon(Icons.Default.VideoCall, contentDescription = "Tube Call", tint = Color.LightGray)
@@ -206,7 +206,7 @@ fun ChatScreen(
                                     },
                                     modifier = Modifier
                                         .clip(CircleShape)
-                                        .background(Color.White.copy(alpha = 0.08f))
+                                        .background(ChatTubeColors.TextPrimary.copy(alpha = 0.08f))
                                 ) {
                                     Icon(Icons.Default.CameraAlt, contentDescription = "Quick Cam Snap", tint = ChatTubeColors.Yellow)
                                 }
@@ -216,8 +216,8 @@ fun ChatScreen(
                                     onValueChange = { chatInputText = it },
                                     placeholder = { Text("Send Chat Message...", color = Color.Gray, fontSize = 13.sp) },
                                     colors = OutlinedTextFieldDefaults.colors(
-                                        focusedTextColor = Color.White,
-                                        unfocusedTextColor = Color.White,
+                                        focusedTextColor = ChatTubeColors.TextPrimary,
+                                        unfocusedTextColor = ChatTubeColors.TextPrimary,
                                         focusedContainerColor = Color.Black,
                                         unfocusedContainerColor = Color.Black,
                                         focusedBorderColor = ChatTubeColors.Pink,
@@ -242,7 +242,7 @@ fun ChatScreen(
                                         .clip(CircleShape)
                                         .background(Brush.linearGradient(ChatTubeColors.Tubegradient))
                                 ) {
-                                    Icon(Icons.Default.Send, contentDescription = "Send", tint = Color.White, modifier = Modifier.size(16.dp))
+                                    Icon(Icons.Default.Send, contentDescription = "Send", tint = ChatTubeColors.TextPrimary, modifier = Modifier.size(16.dp))
                                 }
                             }
                         }
@@ -285,8 +285,8 @@ fun ChatScreen(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Column {
-                                Text("SNAP FROM", color = Color.White.copy(alpha = 0.6f), fontSize = 11.sp, fontWeight = FontWeight.Bold)
-                                Text(currentViewing.senderName, color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.Black)
+                                Text("SNAP FROM", color = ChatTubeColors.TextPrimary.copy(alpha = 0.6f), fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                                Text(currentViewing.senderName, color = ChatTubeColors.TextPrimary, fontSize = 20.sp, fontWeight = FontWeight.Black)
                             }
 
                             // Pulsing countdown circular indicator badge
@@ -295,7 +295,7 @@ fun ChatScreen(
                                     .size(48.dp)
                                     .clip(CircleShape)
                                     .background(ChatTubeColors.Yellow.copy(alpha = 0.9f))
-                                    .border(2.dp, Color.White, CircleShape),
+                                    .border(2.dp, ChatTubeColors.TextPrimary, CircleShape),
                                 contentAlignment = Alignment.Center
                             ) {
                                 Text(
@@ -312,7 +312,7 @@ fun ChatScreen(
                             Icon(
                                 imageVector = Icons.Default.FilterFrames,
                                 contentDescription = "Visual frame focus",
-                                tint = Color.White.copy(alpha = 0.4f),
+                                tint = ChatTubeColors.TextPrimary.copy(alpha = 0.4f),
                                 modifier = Modifier.size(80.dp)
                             )
                             Spacer(modifier = Modifier.height(18.dp))
@@ -326,7 +326,7 @@ fun ChatScreen(
                             ) {
                                 Text(
                                     text = currentViewing.content,
-                                    color = Color.White,
+                                    color = ChatTubeColors.TextPrimary,
                                     fontSize = 14.sp,
                                     fontWeight = FontWeight.Bold
                                 )
@@ -346,7 +346,7 @@ fun ChatScreen(
                                 Icon(Icons.Default.HourglassBottom, contentDescription = "Active Filter", tint = ChatTubeColors.Yellow, modifier = Modifier.size(12.dp))
                                 Text(
                                     text = if (currentViewing.appliedFilter != "None") "Lensed with ${currentViewing.appliedFilter}" else "Original",
-                                    color = Color.White,
+                                    color = ChatTubeColors.TextPrimary,
                                     fontSize = 11.sp
                                 )
                             }
@@ -380,7 +380,7 @@ fun FriendChatRow(
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 friendName,
-                color = Color.White,
+                color = ChatTubeColors.TextPrimary,
                 fontWeight = FontWeight.Bold,
                 fontSize = 14.sp
             )
@@ -426,7 +426,7 @@ fun FriendChatRow(
                         } else {
                             Text(
                                 "Received: ${lastMessage.content}",
-                                color = Color.White.copy(alpha = 0.8f),
+                                color = ChatTubeColors.TextPrimary.copy(alpha = 0.8f),
                                 fontSize = 11.sp,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis
@@ -442,7 +442,7 @@ fun FriendChatRow(
             onClick = onRowClick,
             modifier = Modifier
                 .clip(CircleShape)
-                .background(Color.White.copy(alpha = 0.05f))
+                .background(ChatTubeColors.TextPrimary.copy(alpha = 0.05f))
         ) {
             Icon(Icons.Default.ModeComment, contentDescription = "Open Chat", tint = Color.LightGray, modifier = Modifier.size(18.dp))
         }
@@ -490,7 +490,7 @@ fun ChatBubbleItem(
                         Icon(
                             imageVector = if (message.isOpened) Icons.Default.Drafts else Icons.Default.Camera,
                             contentDescription = "Camera Icon",
-                            tint = if (message.isOpened) Color.LightGray else Color.White,
+                            tint = if (message.isOpened) Color.LightGray else ChatTubeColors.TextPrimary,
                             modifier = Modifier.size(16.dp)
                         )
                     }
@@ -498,7 +498,7 @@ fun ChatBubbleItem(
                     Column {
                         Text(
                             text = if (isMe) "Sent Snap" else if (message.isOpened) "Opened Snap" else "Tap to Play Snap! 🍿",
-                            color = Color.White,
+                            color = ChatTubeColors.TextPrimary,
                             fontWeight = FontWeight.Bold,
                             fontSize = 12.sp
                         )
@@ -525,7 +525,7 @@ fun ChatBubbleItem(
             ) {
                 Text(
                     text = message.content,
-                    color = Color.White,
+                    color = ChatTubeColors.TextPrimary,
                     fontSize = 13.sp
                 )
             }

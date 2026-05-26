@@ -98,7 +98,7 @@ fun StoryViewerOverlay(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(4.dp)
-                            .background(Color.White.copy(alpha = 0.25f)),
+                            .background(ChatTubeColors.TextPrimary.copy(alpha = 0.25f)),
                         horizontalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
                         stories.forEachIndexed { idx, s ->
@@ -112,7 +112,7 @@ fun StoryViewerOverlay(
                                     .weight(1f)
                                     .fillMaxHeight()
                                     .background(
-                                        if (idx <= activeIdx!!) Color.White else Color.White.copy(alpha = 0.3f),
+                                        if (idx <= activeIdx!!) ChatTubeColors.TextPrimary else ChatTubeColors.TextPrimary.copy(alpha = 0.3f),
                                         RoundedCornerShape(2.dp)
                                     )
                                     .fillMaxWidth(itemProgress)
@@ -133,7 +133,7 @@ fun StoryViewerOverlay(
                         ) {
                             UserAvatar(username = currentStory.username, avatarIndex = currentStory.userAvatarIndex, size = 36.dp)
                             Column {
-                                Text(currentStory.username, color = Color.White, fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                                Text(currentStory.username, color = ChatTubeColors.TextPrimary, fontWeight = FontWeight.Bold, fontSize = 14.sp)
                                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                                     Icon(Icons.Default.Schedule, contentDescription = "Active time", tint = Color.LightGray, modifier = Modifier.size(10.dp))
                                     Text("Lensed Story • Auto-playing", color = Color.LightGray, fontSize = 9.sp)
@@ -147,7 +147,7 @@ fun StoryViewerOverlay(
                                 .clip(CircleShape)
                                 .background(Color.Black.copy(alpha = 0.35f))
                         ) {
-                            Icon(Icons.Default.Close, contentDescription = "Close story", tint = Color.White)
+                            Icon(Icons.Default.Close, contentDescription = "Close story", tint = ChatTubeColors.TextPrimary)
                         }
                     }
                 }
@@ -160,7 +160,7 @@ fun StoryViewerOverlay(
                 ) {
                     Text(
                         currentStory.username.uppercase() + " SNAP!",
-                        color = Color.White.copy(alpha = 0.5f),
+                        color = ChatTubeColors.TextPrimary.copy(alpha = 0.5f),
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Bold,
                         letterSpacing = 2.sp
@@ -168,7 +168,7 @@ fun StoryViewerOverlay(
                     Spacer(modifier = Modifier.height(10.dp))
                     Text(
                         "🎬 Daily Vlog Vibe",
-                        color = Color.White,
+                        color = ChatTubeColors.TextPrimary,
                         fontSize = 24.sp,
                         fontWeight = FontWeight.Black
                     )

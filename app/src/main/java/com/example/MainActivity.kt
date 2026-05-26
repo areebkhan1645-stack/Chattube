@@ -87,7 +87,7 @@ class MainActivity : ComponentActivity() {
                                                 text = tab.label,
                                                 fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal,
                                                 fontSize = 11.sp,
-                                                color = if (selected) Color.White else Color.Gray
+                                                color = if (selected) ChatTubeColors.TextPrimary else Color.Gray
                                             )
                                         },
                                         icon = {
@@ -124,7 +124,7 @@ class MainActivity : ComponentActivity() {
                                                     Icon(
                                                         imageVector = iconSelected,
                                                         contentDescription = tab.label,
-                                                        tint = if (selected) Color.Black else Color.White,
+                                                        tint = if (selected) ChatTubeColors.Pink else Color.Gray,
                                                         modifier = Modifier.size(20.dp)
                                                     )
                                                 }

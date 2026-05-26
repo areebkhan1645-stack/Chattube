@@ -85,7 +85,7 @@ fun CameraScreen(
                         Icon(
                             imageVector = Icons.Default.Camera,
                             contentDescription = "Camera lens focus",
-                            tint = Color.White.copy(alpha = 0.35f),
+                            tint = ChatTubeColors.TextPrimary.copy(alpha = 0.35f),
                             modifier = Modifier.size(72.dp)
                         )
                         Text(
@@ -103,7 +103,7 @@ fun CameraScreen(
                                 .padding(24.dp)
                                 .size(54.dp)
                                 .clip(CircleShape)
-                                .background(Color.White.copy(alpha = 0.2f)),
+                                .background(ChatTubeColors.TextPrimary.copy(alpha = 0.2f)),
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
@@ -129,7 +129,7 @@ fun CameraScreen(
                             )
                             Text(
                                 text = activeLens!!.description,
-                                color = Color.White,
+                                color = ChatTubeColors.TextPrimary,
                                 fontSize = 10.sp
                             )
                         }
@@ -151,7 +151,7 @@ fun CameraScreen(
                             .clip(CircleShape)
                             .background(Color.Black.copy(alpha = 0.5f))
                     ) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = Color.White)
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = ChatTubeColors.TextPrimary)
                     }
 
                     Box(
@@ -175,7 +175,7 @@ fun CameraScreen(
                             .clip(CircleShape)
                             .background(Color.Black.copy(alpha = 0.5f))
                     ) {
-                        Icon(Icons.Default.Refresh, contentDescription = "Clear lens", tint = Color.White)
+                        Icon(Icons.Default.Refresh, contentDescription = "Clear lens", tint = ChatTubeColors.TextPrimary)
                     }
                 }
 
@@ -190,16 +190,16 @@ fun CameraScreen(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     IconButton(onClick = { zoomValue = (zoomValue + 0.5f).coerceIn(1.0f, 4.0f) }) {
-                        Icon(Icons.Default.ZoomIn, contentDescription = "Zoom", tint = Color.White)
+                        Icon(Icons.Default.ZoomIn, contentDescription = "Zoom", tint = ChatTubeColors.TextPrimary)
                     }
                     IconButton(onClick = { zoomValue = 1.0f }) {
-                        Text("1x", color = Color.White, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                        Text("1x", color = ChatTubeColors.TextPrimary, fontSize = 11.sp, fontWeight = FontWeight.Bold)
                     }
                     IconButton(onClick = { brightnessValue = (brightnessValue + 0.2f).coerceIn(0.5f, 2.0f) }) {
-                        Icon(Icons.Default.LightMode, contentDescription = "Level", tint = Color.White)
+                        Icon(Icons.Default.LightMode, contentDescription = "Level", tint = ChatTubeColors.TextPrimary)
                     }
                     IconButton(onClick = { brightnessValue = 1.0f }) {
-                        Icon(Icons.Default.RotateRight, contentDescription = "Cam Rotate", tint = Color.White)
+                        Icon(Icons.Default.RotateRight, contentDescription = "Cam Rotate", tint = ChatTubeColors.TextPrimary)
                     }
                 }
 
@@ -224,8 +224,8 @@ fun CameraScreen(
                             onValueChange = { customVibeInput = it },
                             placeholder = { Text("Describe visual lens e.g 'galaxy violet', 'cyberpunk'", color = Color.Gray, fontSize = 11.sp) },
                             colors = OutlinedTextFieldDefaults.colors(
-                                focusedTextColor = Color.White,
-                                unfocusedTextColor = Color.White,
+                                focusedTextColor = ChatTubeColors.TextPrimary,
+                                unfocusedTextColor = ChatTubeColors.TextPrimary,
                                 focusedContainerColor = Color.Black.copy(alpha = 0.8f),
                                 unfocusedContainerColor = Color.Black.copy(alpha = 0.6f),
                                 focusedBorderColor = ChatTubeColors.Yellow,
@@ -276,7 +276,7 @@ fun CameraScreen(
                             modifier = Modifier.clickable { viewModel.applyAILensPrompt("sunset") }
                         ) {
                             Box(modifier = Modifier.size(36.dp).clip(CircleShape).background(Color(0xFFFF9E00)))
-                            Text("Sunset", color = Color.White, fontSize = 9.sp)
+                            Text("Sunset", color = ChatTubeColors.TextPrimary, fontSize = 9.sp)
                         }
 
                         // Capture Shutter (Snap button matching Snapchat)
@@ -284,8 +284,8 @@ fun CameraScreen(
                             modifier = Modifier
                                 .size(80.dp)
                                 .clip(CircleShape)
-                                .border(5.dp, Color.White, CircleShape)
-                                .background(Color.White.copy(alpha = 0.2f))
+                                .border(5.dp, ChatTubeColors.TextPrimary, CircleShape)
+                                .background(ChatTubeColors.TextPrimary.copy(alpha = 0.2f))
                                 .padding(6.dp)
                                 .clickable {
                                     // Capture simulation! Save parameters.
@@ -300,7 +300,7 @@ fun CameraScreen(
                                 modifier = Modifier
                                     .fillMaxSize()
                                     .clip(CircleShape)
-                                    .background(Color.White)
+                                    .background(ChatTubeColors.TextPrimary)
                             )
                         }
 
@@ -310,7 +310,7 @@ fun CameraScreen(
                             modifier = Modifier.clickable { viewModel.applyAILensPrompt("cyberpunk") }
                         ) {
                             Box(modifier = Modifier.size(36.dp).clip(CircleShape).background(Color(0xFF00F0FF)))
-                            Text("Neon", color = Color.White, fontSize = 9.sp)
+                            Text("Neon", color = ChatTubeColors.TextPrimary, fontSize = 9.sp)
                         }
                     }
                 }
@@ -340,7 +340,7 @@ fun CameraScreen(
                     ) {
                         Icon(Icons.Default.Celebration, contentDescription = "Flares", tint = ChatTubeColors.Yellow, modifier = Modifier.size(54.dp))
                         Spacer(modifier = Modifier.height(10.dp))
-                        Text("SNAP CAPTURED!", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 18.sp)
+                        Text("SNAP CAPTURED!", color = ChatTubeColors.TextPrimary, fontWeight = FontWeight.Bold, fontSize = 18.sp)
                         Text(
                             text = if (activeLens != null) "Coded Filter: ${activeLens!!.filterName}" else "Camera Raw Lens",
                             color = Color.LightGray,
@@ -364,7 +364,7 @@ fun CameraScreen(
                             ) {
                                 Text(
                                     text = aiCaption,
-                                    color = Color.White,
+                                    color = ChatTubeColors.TextPrimary,
                                     fontSize = 12.sp,
                                     fontWeight = FontWeight.Medium
                                 )
@@ -388,7 +388,7 @@ fun CameraScreen(
                             .clip(CircleShape)
                             .background(Color.Black.copy(alpha = 0.5f))
                     ) {
-                        Icon(Icons.Default.Close, contentDescription = "Discard Capture", tint = Color.White)
+                        Icon(Icons.Default.Close, contentDescription = "Discard Capture", tint = ChatTubeColors.TextPrimary)
                     }
 
                     Box(
@@ -397,7 +397,7 @@ fun CameraScreen(
                             .background(Color.Black.copy(alpha = 0.5f))
                             .padding(horizontal = 10.dp, vertical = 5.dp)
                     ) {
-                        Text("Captured Snap 📸", color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                        Text("Captured Snap 📸", color = ChatTubeColors.TextPrimary, fontSize = 12.sp, fontWeight = FontWeight.Bold)
                     }
 
                     // Self destruct timer button (Classic Snapchat!)
@@ -418,7 +418,7 @@ fun CameraScreen(
                         horizontalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
                         Icon(Icons.Default.HourglassEmpty, contentDescription = "Timer", tint = ChatTubeColors.Yellow, modifier = Modifier.size(14.dp))
-                        Text("${selectedDurationSeconds}s", color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                        Text("${selectedDurationSeconds}s", color = ChatTubeColors.TextPrimary, fontSize = 12.sp, fontWeight = FontWeight.Bold)
                     }
                 }
 
@@ -455,8 +455,8 @@ fun CameraScreen(
                                 onValueChange = { imageDetailsPrompt = it },
                                 placeholder = { Text("Describe shot e.g 'sipping pink boba at beach'...", color = Color.Gray, fontSize = 11.sp) },
                                 colors = OutlinedTextFieldDefaults.colors(
-                                    focusedTextColor = Color.White,
-                                    unfocusedTextColor = Color.White,
+                                    focusedTextColor = ChatTubeColors.TextPrimary,
+                                    unfocusedTextColor = ChatTubeColors.TextPrimary,
                                     focusedContainerColor = Color.Black,
                                     unfocusedContainerColor = Color.Black,
                                     focusedBorderColor = ChatTubeColors.Pink,
@@ -479,9 +479,9 @@ fun CameraScreen(
                                 shape = RoundedCornerShape(12.dp)
                             ) {
                                 if (isGeneratingCaption) {
-                                    CircularProgressIndicator(color = Color.White, modifier = Modifier.size(16.dp))
+                                    CircularProgressIndicator(color = ChatTubeColors.TextPrimary, modifier = Modifier.size(16.dp))
                                 } else {
-                                    Text("Draft", color = Color.White, fontSize = 11.sp)
+                                    Text("Draft", color = ChatTubeColors.TextPrimary, fontSize = 11.sp)
                                 }
                             }
                         }
@@ -492,8 +492,8 @@ fun CameraScreen(
                             onValueChange = { customCaptionText = it },
                             placeholder = { Text("Write custom snap caption or use AI generated draft...", color = Color.Gray, fontSize = 12.sp) },
                             colors = OutlinedTextFieldDefaults.colors(
-                                focusedTextColor = Color.White,
-                                unfocusedTextColor = Color.White,
+                                focusedTextColor = ChatTubeColors.TextPrimary,
+                                unfocusedTextColor = ChatTubeColors.TextPrimary,
                                 focusedBorderColor = Color.LightGray,
                                 unfocusedBorderColor = ChatTubeColors.BorderDark
                             ),
@@ -519,7 +519,7 @@ fun CameraScreen(
                                 },
                                 modifier = Modifier.weight(1f),
                                 shape = RoundedCornerShape(12.dp),
-                                colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.White)
+                                colors = ButtonDefaults.outlinedButtonColors(contentColor = ChatTubeColors.TextPrimary)
                             ) {
                                 Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                                     Icon(Icons.Default.AddCircleOutline, contentDescription = "Add story", modifier = Modifier.size(14.dp))
@@ -542,7 +542,7 @@ fun CameraScreen(
                                 },
                                 modifier = Modifier.weight(1f),
                                 shape = RoundedCornerShape(12.dp),
-                                colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.White)
+                                colors = ButtonDefaults.outlinedButtonColors(contentColor = ChatTubeColors.TextPrimary)
                             ) {
                                 Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                                     Icon(Icons.Default.DynamicFeed, contentDescription = "Add post", modifier = Modifier.size(14.dp))
@@ -589,7 +589,7 @@ fun CameraScreen(
                         shape = RoundedCornerShape(20.dp)
                     ) {
                         Column(modifier = Modifier.padding(20.dp)) {
-                            Text("Select Friend to Snap! 👻🤳", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                            Text("Select Friend to Snap! 👻🤳", color = ChatTubeColors.TextPrimary, fontWeight = FontWeight.Bold, fontSize = 16.sp)
                             Text("Your snap will self-destruct in ${selectedDurationSeconds} seconds.", color = Color.Gray, fontSize = 11.sp)
                             Spacer(modifier = Modifier.height(12.dp))
 
@@ -618,7 +618,7 @@ fun CameraScreen(
                                     ) {
                                         UserAvatar(username = friend, avatarIndex = friend.hashCode(), size = 32.dp)
                                         Spacer(modifier = Modifier.width(10.dp))
-                                        Text(friend, color = Color.White, fontWeight = FontWeight.Medium, fontSize = 13.sp)
+                                        Text(friend, color = ChatTubeColors.TextPrimary, fontWeight = FontWeight.Medium, fontSize = 13.sp)
                                         Spacer(modifier = Modifier.weight(1f))
                                         Icon(Icons.Default.ArrowForwardIos, contentDescription = "Go", tint = Color.Gray, modifier = Modifier.size(12.dp))
                                     }

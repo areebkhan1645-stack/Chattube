@@ -40,8 +40,8 @@ fun SettingsScreen(
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = ChatTubeColors.DarkBackground,
-                    titleContentColor = Color.White,
-                    navigationIconContentColor = Color.White
+                    titleContentColor = ChatTubeColors.TextPrimary,
+                    navigationIconContentColor = ChatTubeColors.TextPrimary
                 )
             )
         },
@@ -80,11 +80,11 @@ fun SettingsScreen(
                             .background(Color.Gray.copy(alpha = 0.3f)),
                         contentAlignment = Alignment.Center
                     ) {
-                        Icon(Icons.Default.Person, contentDescription = null, tint = Color.White)
+                        Icon(Icons.Default.Person, contentDescription = null, tint = ChatTubeColors.TextPrimary)
                     }
                     Spacer(modifier = Modifier.width(12.dp))
                     Column(modifier = Modifier.weight(1f)) {
-                        Text(account.username, color = Color.White, fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                        Text(account.username, color = ChatTubeColors.TextPrimary, fontWeight = FontWeight.Bold, fontSize = 14.sp)
                         if (account.username == userStats?.username) {
                             Text("Active", color = Color.Green, fontSize = 12.sp)
                         }
@@ -175,10 +175,10 @@ fun SettingsItem(icon: ImageVector, title: String, subtitle: String? = null) {
             .padding(horizontal = 16.dp, vertical = 14.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Icon(imageVector = icon, contentDescription = title, tint = Color.White, modifier = Modifier.size(24.dp))
+        Icon(imageVector = icon, contentDescription = title, tint = ChatTubeColors.TextPrimary, modifier = Modifier.size(24.dp))
         Spacer(modifier = Modifier.width(16.dp))
         Column(modifier = Modifier.weight(1f)) {
-            Text(text = title, color = Color.White, fontSize = 16.sp)
+            Text(text = title, color = ChatTubeColors.TextPrimary, fontSize = 16.sp)
             if (subtitle != null) {
                 Text(text = subtitle, color = Color.Gray, fontSize = 12.sp)
             }
@@ -196,9 +196,9 @@ fun SettingsToggleItem(icon: ImageVector, title: String, defaultState: Boolean) 
             .padding(horizontal = 16.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Icon(imageVector = icon, contentDescription = title, tint = Color.White, modifier = Modifier.size(24.dp))
+        Icon(imageVector = icon, contentDescription = title, tint = ChatTubeColors.TextPrimary, modifier = Modifier.size(24.dp))
         Spacer(modifier = Modifier.width(16.dp))
-        Text(text = title, color = Color.White, fontSize = 16.sp, modifier = Modifier.weight(1f))
+        Text(text = title, color = ChatTubeColors.TextPrimary, fontSize = 16.sp, modifier = Modifier.weight(1f))
         Switch(
             checked = isChecked,
             onCheckedChange = { isChecked = it },

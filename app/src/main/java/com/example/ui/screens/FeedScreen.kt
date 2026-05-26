@@ -33,12 +33,13 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.data.local.PostEntity
+import com.example.data.local.UserStatsEntity
 import com.example.data.local.StoryEntity
 import com.example.ui.viewmodel.ChatTubeViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun FeedScreen(
     viewModel: ChatTubeViewModel,
@@ -49,6 +50,7 @@ fun FeedScreen(
     val stories by viewModel.stories.collectAsState()
     val userStats by viewModel.userStats.collectAsState()
     val scope = rememberCoroutineScope()
+    var showUploadReelBottomSheet by remember { mutableStateOf(false) }
     
     // Segmented tab state for Feed vs Vertical Reels
     var selectedFeedType by remember { mutableStateOf("Feed") }
@@ -74,17 +76,32 @@ fun FeedScreen(
                     title = "TUBE & INTERACTION",
                     subtitle = "ChatTube",
                     trailingContent = {
-                        IconButton(
-                            onClick = onNavigateToCamera,
-                            modifier = Modifier
-                                .clip(CircleShape)
-                                .background(Brush.linearGradient(ChatTubeColors.Tubegradient))
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.CameraAlt,
-                                contentDescription = "Quick Snap",
-                                tint = Color.White
-                            )
+                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            IconButton(
+                                onClick = { showUploadReelBottomSheet = true },
+                                modifier = Modifier
+                                    .clip(CircleShape)
+                                    .background(ChatTubeColors.SurfaceDark)
+                                    .border(1.dp, ChatTubeColors.BorderDark, CircleShape)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Add,
+                                    contentDescription = "Upload Reel",
+                                    tint = ChatTubeColors.Pink
+                                )
+                            }
+                            IconButton(
+                                onClick = onNavigateToCamera,
+                                modifier = Modifier
+                                    .clip(CircleShape)
+                                    .background(Brush.linearGradient(ChatTubeColors.Tubegradient))
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.CameraAlt,
+                                    contentDescription = "Quick Snap",
+                                    tint = ChatTubeColors.TextPrimary
+                                )
+                            }
                         }
                     }
                 )
@@ -111,7 +128,7 @@ fun FeedScreen(
                                 .clickable { selectedFeedType = "Feed" }
                                 .padding(horizontal = 24.dp, vertical = 6.dp)
                         ) {
-                            Text("Feed 📸", color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Black)
+                            Text("Feed 📸", color = ChatTubeColors.TextPrimary, fontSize = 12.sp, fontWeight = FontWeight.Black)
                         }
                         Box(
                             modifier = Modifier
@@ -120,7 +137,7 @@ fun FeedScreen(
                                 .clickable { selectedFeedType = "Reels" }
                                 .padding(horizontal = 24.dp, vertical = 6.dp)
                         ) {
-                            Text("Reels 🎬", color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Black)
+                            Text("Reels 🎬", color = ChatTubeColors.TextPrimary, fontSize = 12.sp, fontWeight = FontWeight.Black)
                         }
                     }
                 }
@@ -146,7 +163,7 @@ fun FeedScreen(
                         ) {
                             Text(
                                 text = "Daily Stories",
-                                color = Color.White.copy(alpha = 0.8f),
+                                color = ChatTubeColors.TextPrimary.copy(alpha = 0.8f),
                                 fontSize = 14.sp,
                                 fontWeight = FontWeight.Bold,
                                 modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
@@ -194,6 +211,8 @@ fun FeedScreen(
                         items(posts, key = { it.id }) { post ->
                             PostItemCard(
                                 post = post,
+                                currentUsername = userStats?.username,
+                                currentUserProfilePicUri = userStats?.profilePicUri,
                                 onLikeToggle = { viewModel.likePost(post.id, post.isLiked) },
                                 onCommentClick = { activeCommentsPostId = post.id }
                             )
@@ -239,7 +258,7 @@ fun FeedScreen(
                                     .clip(CircleShape)
                                     .background(Color.Red)
                             )
-                            Text("LIVE TUBE REEL", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 11.sp, letterSpacing = 1.sp)
+                            Text("LIVE TUBE REEL", color = ChatTubeColors.TextPrimary, fontWeight = FontWeight.Bold, fontSize = 11.sp, letterSpacing = 1.sp)
                         }
 
                         // Central visuals feedback
@@ -250,13 +269,13 @@ fun FeedScreen(
                             Icon(
                                 imageVector = Icons.Default.MusicVideo,
                                 contentDescription = "Visual Sync",
-                                tint = Color.White.copy(alpha = 0.3f),
+                                tint = ChatTubeColors.TextPrimary.copy(alpha = 0.3f),
                                 modifier = Modifier.size(72.dp)
                             )
                             Spacer(modifier = Modifier.height(10.dp))
                             Text(
                                 "Rendering Ambient Soundscape...",
-                                color = Color.White.copy(alpha = 0.5f),
+                                color = ChatTubeColors.TextPrimary.copy(alpha = 0.5f),
                                 fontSize = 11.sp
                             )
                         }
@@ -284,10 +303,10 @@ fun FeedScreen(
                                     Icon(
                                         imageVector = if (currentReel.isLiked) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
                                         contentDescription = "Like Reel",
-                                        tint = Color.White
+                                        tint = ChatTubeColors.TextPrimary
                                     )
                                 }
-                                Text("${currentReel.likesCount}k", color = Color.White, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                                Text("${currentReel.likesCount}k", color = ChatTubeColors.TextPrimary, fontSize = 11.sp, fontWeight = FontWeight.Bold)
                             }
 
                             // Comments trigger
@@ -298,9 +317,9 @@ fun FeedScreen(
                                         .clip(CircleShape)
                                         .background(Color.Black.copy(alpha = 0.4f))
                                 ) {
-                                    Icon(Icons.Default.ModeComment, contentDescription = "Comments", tint = Color.White)
+                                    Icon(Icons.Default.ModeComment, contentDescription = "Comments", tint = ChatTubeColors.TextPrimary)
                                 }
-                                Text("${currentReel.commentsCount}", color = Color.White, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                                Text("${currentReel.commentsCount}", color = ChatTubeColors.TextPrimary, fontSize = 11.sp, fontWeight = FontWeight.Bold)
                             }
 
                             // Easy next reel navigation (infinite looping)
@@ -326,7 +345,7 @@ fun FeedScreen(
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Text(
                                     text = "@${currentReel.username}",
-                                    color = Color.White,
+                                    color = ChatTubeColors.TextPrimary,
                                     fontWeight = FontWeight.Black,
                                     fontSize = 15.sp
                                 )
@@ -346,7 +365,7 @@ fun FeedScreen(
                             }
                             Text(
                                 text = currentReel.caption,
-                                color = Color.White.copy(alpha = 0.9f),
+                                color = ChatTubeColors.TextPrimary.copy(alpha = 0.9f),
                                 fontSize = 13.sp
                             )
                             Row(
@@ -396,7 +415,7 @@ fun FeedScreen(
                             ) {
                                 Text(
                                     text = "Comments (${comments.size})",
-                                    color = Color.White,
+                                    color = ChatTubeColors.TextPrimary,
                                     fontSize = 18.sp,
                                     fontWeight = FontWeight.Bold
                                 )
@@ -423,7 +442,7 @@ fun FeedScreen(
                                         Column {
                                             Text(
                                                 text = comment.first,
-                                                color = Color.White,
+                                                color = ChatTubeColors.TextPrimary,
                                                 fontWeight = FontWeight.Bold,
                                                 fontSize = 13.sp
                                             )
@@ -450,8 +469,8 @@ fun FeedScreen(
                                     onValueChange = { commentText = it },
                                     placeholder = { Text("Add comment info...", color = Color.Gray) },
                                     colors = OutlinedTextFieldDefaults.colors(
-                                        focusedTextColor = Color.White,
-                                        unfocusedTextColor = Color.White,
+                                        focusedTextColor = ChatTubeColors.TextPrimary,
+                                        unfocusedTextColor = ChatTubeColors.TextPrimary,
                                         focusedContainerColor = Color.Black,
                                         unfocusedContainerColor = Color.Black,
                                         focusedBorderColor = ChatTubeColors.Pink,
@@ -472,12 +491,92 @@ fun FeedScreen(
                                         .clip(CircleShape)
                                         .background(ChatTubeColors.Pink)
                                 ) {
-                                    Icon(Icons.Default.ArrowUpward, contentDescription = "Post Comment", tint = Color.White)
+                                    Icon(Icons.Default.ArrowUpward, contentDescription = "Post Comment", tint = ChatTubeColors.TextPrimary)
                                 }
                             }
                         }
                     }
                 }
+            }
+        }
+    }
+    
+    // Bottom Sheet for Upload Reel
+    if (showUploadReelBottomSheet) {
+        ModalBottomSheet(
+            onDismissRequest = { showUploadReelBottomSheet = false },
+            containerColor = ChatTubeColors.SurfaceDark
+        ) {
+            var caption by remember { mutableStateOf("") }
+            var videoSelected by remember { mutableStateOf(false) }
+            
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                Text("Upload a New Reel", color = ChatTubeColors.TextPrimary, fontSize = 20.sp, fontWeight = FontWeight.Black)
+
+                // Placeholder for Video Selection Area
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(120.dp)
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(ChatTubeColors.DarkBackground)
+                        .clickable { videoSelected = true },
+                    contentAlignment = Alignment.Center
+                ) {
+                    if (videoSelected) {
+                        Text("🎥 video_01.mp4 selected", color = ChatTubeColors.Pink, fontWeight = FontWeight.Bold)
+                    } else {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Icon(Icons.Default.VideoLibrary, contentDescription = null, tint = ChatTubeColors.TextSecondary, modifier = Modifier.size(32.dp))
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text("Select Video from Gallery", color = ChatTubeColors.TextSecondary, fontSize = 14.sp)
+                        }
+                    }
+                }
+
+                OutlinedTextField(
+                    value = caption,
+                    onValueChange = { caption = it },
+                    placeholder = { Text("Write a catchy description...", color = ChatTubeColors.TextSecondary) },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedTextColor = ChatTubeColors.TextPrimary,
+                        unfocusedTextColor = ChatTubeColors.TextPrimary,
+                        focusedBorderColor = ChatTubeColors.Pink,
+                        unfocusedBorderColor = ChatTubeColors.BorderDark,
+                        cursorColor = ChatTubeColors.Pink
+                    ),
+                    maxLines = 3
+                )
+                
+                Button(
+                    onClick = {
+                        if (videoSelected) {
+                            viewModel.addPost(
+                                mediaUrl = "sample_reel",
+                                mediaType = "TUBE", // TUBE implies reel here, based on existing logic
+                                caption = caption,
+                                filterApplied = "Normal"
+                            )
+                            showUploadReelBottomSheet = false
+                        }
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(50.dp),
+                    enabled = videoSelected && caption.isNotEmpty(),
+                    colors = ButtonDefaults.buttonColors(containerColor = ChatTubeColors.Pink)
+                ) {
+                    Text("Publish Reel", color = ChatTubeColors.SurfaceDark, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                }
+                
+                Spacer(modifier = Modifier.height(16.dp))
             }
         }
     }
@@ -504,7 +603,7 @@ fun StoryCircleItem(
         Spacer(modifier = Modifier.height(6.dp))
         Text(
             text = story.username,
-            color = if (story.isViewed) Color.Gray else Color.White,
+            color = if (story.isViewed) Color.Gray else ChatTubeColors.TextPrimary,
             fontSize = 11.sp,
             fontWeight = if (story.isViewed) FontWeight.Normal else FontWeight.Medium,
             maxLines = 1,
@@ -518,6 +617,8 @@ fun StoryCircleItem(
 @Composable
 fun PostItemCard(
     post: PostEntity,
+    currentUsername: String?,
+    currentUserProfilePicUri: String?,
     onLikeToggle: () -> Unit,
     onCommentClick: () -> Unit
 ) {
@@ -559,14 +660,14 @@ fun PostItemCard(
                     .padding(12.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                val postProfilePic = if (post.username == userStats?.username) userStats?.profilePicUri else null
+                val postProfilePic = if (post.username == currentUsername) currentUserProfilePicUri else null
                 UserAvatar(username = post.username, avatarIndex = post.userAvatarIndex, size = 38.dp, profilePicUri = postProfilePic)
                 Spacer(modifier = Modifier.width(10.dp))
                 Column(modifier = Modifier.weight(1f)) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(
                             text = post.username,
-                            color = Color.White,
+                            color = ChatTubeColors.TextPrimary,
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Bold
                         )
@@ -582,8 +683,8 @@ fun PostItemCard(
                                     verticalAlignment = Alignment.CenterVertically,
                                     horizontalArrangement = Arrangement.spacedBy(2.dp)
                                 ) {
-                                    Icon(Icons.Default.PlayArrow, contentDescription = "Tube", tint = Color.White, modifier = Modifier.size(10.dp))
-                                    Text("TUBE", color = Color.White, fontSize = 8.sp, fontWeight = FontWeight.Bold)
+                                    Icon(Icons.Default.PlayArrow, contentDescription = "Tube", tint = ChatTubeColors.TextPrimary, modifier = Modifier.size(10.dp))
+                                    Text("TUBE", color = ChatTubeColors.TextPrimary, fontSize = 8.sp, fontWeight = FontWeight.Bold)
                                 }
                             }
                         }
@@ -662,33 +763,33 @@ fun PostItemCard(
                         Icon(
                             imageVector = if (isPlaying) Icons.Default.PlayCircleFilled else Icons.Filled.PauseCircle,
                             contentDescription = "Playing",
-                            tint = Color.White.copy(alpha = 0.85f),
+                            tint = ChatTubeColors.TextPrimary.copy(alpha = 0.85f),
                             modifier = Modifier.size(54.dp)
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
                             text = if (isPlaying) "Playing Tube Short... 🔊" else "Tube Short Paused 🔇",
-                            color = Color.White,
+                            color = ChatTubeColors.TextPrimary,
                             fontSize = 15.sp,
                             fontWeight = FontWeight.Bold,
                             fontStyle = FontStyle.Italic
                         )
                         Text(
                             text = "Original Audio - sam_skaters Remix 🎧",
-                            color = Color.White.copy(alpha = 0.7f),
+                            color = ChatTubeColors.TextPrimary.copy(alpha = 0.7f),
                             fontSize = 11.sp
                         )
                     } else {
                         Icon(
                             imageVector = Icons.Default.Photo,
                             contentDescription = "Snap Shot",
-                            tint = Color.White.copy(alpha = 0.5f),
+                            tint = ChatTubeColors.TextPrimary.copy(alpha = 0.5f),
                             modifier = Modifier.size(48.dp)
                         )
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
                             text = "Snap Shot 📸",
-                            color = Color.White.copy(alpha = 0.9f),
+                            color = ChatTubeColors.TextPrimary.copy(alpha = 0.9f),
                             fontWeight = FontWeight.Bold,
                             fontSize = 14.sp
                         )
@@ -712,7 +813,7 @@ fun PostItemCard(
                                 "1995 Nostalgia" -> "📼 Retro Lensed"
                                 else -> "🪄 AI Lensed"
                             },
-                            color = Color.White,
+                            color = ChatTubeColors.TextPrimary,
                             fontSize = 10.sp,
                             fontWeight = FontWeight.Bold
                         )
@@ -726,7 +827,7 @@ fun PostItemCard(
                             .align(Alignment.BottomCenter)
                             .fillMaxWidth()
                             .height(6.dp)
-                            .background(Color.White.copy(alpha = 0.2f))
+                            .background(ChatTubeColors.TextPrimary.copy(alpha = 0.2f))
                     ) {
                         Box(
                             modifier = Modifier
@@ -747,7 +848,7 @@ fun PostItemCard(
                         modifier = Modifier
                             .size(100.dp)
                             .clip(CircleShape)
-                            .background(Color.White.copy(alpha = 0.2f)),
+                            .background(ChatTubeColors.TextPrimary.copy(alpha = 0.2f)),
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
@@ -780,7 +881,7 @@ fun PostItemCard(
                     Icon(
                         imageVector = if (post.isLiked) Icons.Default.Favorite else Icons.Outlined.FavoriteBorder,
                         contentDescription = "Like Post",
-                        tint = if (post.isLiked) Color(0xFFFF0D55) else Color.White
+                        tint = if (post.isLiked) Color(0xFFFF0D55) else ChatTubeColors.TextPrimary
                     )
                 }
 
@@ -788,7 +889,7 @@ fun PostItemCard(
                     Icon(
                         imageVector = Icons.Outlined.ChatBubbleOutline,
                         contentDescription = "Comment",
-                        tint = Color.White
+                        tint = ChatTubeColors.TextPrimary
                     )
                 }
 
@@ -796,7 +897,7 @@ fun PostItemCard(
                     Icon(
                         imageVector = Icons.Outlined.Send,
                         contentDescription = "Direct share",
-                        tint = Color.White
+                        tint = ChatTubeColors.TextPrimary
                     )
                 }
 
@@ -806,7 +907,7 @@ fun PostItemCard(
                     Icon(
                         imageVector = Icons.Outlined.BookmarkBorder,
                         contentDescription = "Bookmark",
-                        tint = Color.White
+                        tint = ChatTubeColors.TextPrimary
                     )
                 }
             }
@@ -819,7 +920,7 @@ fun PostItemCard(
             ) {
                 Text(
                     text = "${post.likesCount} liking snaps & tubes",
-                    color = Color.White,
+                    color = ChatTubeColors.TextPrimary,
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Bold
                 )
@@ -831,7 +932,7 @@ fun PostItemCard(
                 ) {
                     Text(
                         text = post.username,
-                        color = Color.White,
+                        color = ChatTubeColors.TextPrimary,
                         fontWeight = FontWeight.Bold,
                         fontSize = 12.sp,
                         modifier = Modifier.padding(end = 6.dp)

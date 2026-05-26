@@ -200,15 +200,17 @@ fun ChatTubeLogo(
 
 // Centralized colors for ChatTube
 object ChatTubeColors {
-    val Yellow = Color(0xFFFFFC00) // Snapchat Yellow
+    val Yellow = Color(0xFFFFB300) // Darker yellow for visibility
     val Pink = Color(0xFFE1306C) // Instagram Pink
     val Purple = Color(0xFF833AB4) // Instagram Purple
     val Blue = Color(0xFF405DE6) // Cool Blue
-    val DarkBackground = Color(0xFF0F0E17) // Deep cosmic black
-    val SurfaceDark = Color(0xFF1D1B26) // Card background
-    val BorderDark = Color(0xFF2E2B3D) // Subtle border
-    val WhiteTranslucent = Color(0x22FFFFFF)
+    val DarkBackground = Color(0xFFF5F5F7) // Light Grey background
+    val SurfaceDark = Color(0xFFFFFFFF) // White card background
+    val BorderDark = Color(0xFFE5E5EA) // Light grey border
+    val WhiteTranslucent = Color(0x11000000)
     val PureWhite = Color(0xFFFFFFFF)
+    val TextPrimary = Color(0xFF1C1C1E) // Dark Grey/Black for text
+    val TextSecondary = Color(0xFF8E8E93) // Grey for secondary text
     
     // Gradient lists
     val Instagradient = listOf(Pink, Purple, Blue)
@@ -304,14 +306,14 @@ fun GlassmorphicHeader(
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = title,
-                color = ChatTubeColors.WhiteTranslucent,
+                color = ChatTubeColors.TextSecondary,
                 fontSize = 12.sp,
                 fontWeight = FontWeight.SemiBold,
                 letterSpacing = 2.sp
             )
             Text(
                 text = subtitle ?: "ChatTube",
-                color = Color.White,
+                color = ChatTubeColors.TextPrimary,
                 fontSize = 22.sp,
                 fontWeight = FontWeight.Black,
                 letterSpacing = 0.5.sp

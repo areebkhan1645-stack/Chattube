@@ -76,7 +76,7 @@ fun AuthScreen(
 
             Text(
                 text = "CHATTUBE",
-                color = Color.White,
+                color = ChatTubeColors.TextPrimary,
                 fontSize = 28.sp,
                 fontWeight = FontWeight.Black,
                 letterSpacing = 4.sp,
@@ -108,7 +108,7 @@ fun AuthScreen(
                 ) {
                     Text(
                         text = if (isSignUpMode) "Create Creator Profile" else "Welcome Back",
-                        color = Color.White,
+                        color = ChatTubeColors.TextPrimary,
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold
                     )
@@ -134,8 +134,8 @@ fun AuthScreen(
                             leadingIcon = { Icon(Icons.Default.Person, contentDescription = "Name") },
                             modifier = Modifier.fillMaxWidth().testTag("signup_name_input"),
                             colors = OutlinedTextFieldDefaults.colors(
-                                focusedTextColor = Color.White,
-                                unfocusedTextColor = Color.White,
+                                focusedTextColor = ChatTubeColors.TextPrimary,
+                                unfocusedTextColor = ChatTubeColors.TextPrimary,
                                 focusedBorderColor = ChatTubeColors.Pink,
                                 unfocusedBorderColor = ChatTubeColors.BorderDark
                             ),
@@ -150,8 +150,8 @@ fun AuthScreen(
                             leadingIcon = { Icon(Icons.Default.Person, contentDescription = "Username") },
                             modifier = Modifier.fillMaxWidth().testTag("signup_username_input"),
                             colors = OutlinedTextFieldDefaults.colors(
-                                focusedTextColor = Color.White,
-                                unfocusedTextColor = Color.White,
+                                focusedTextColor = ChatTubeColors.TextPrimary,
+                                unfocusedTextColor = ChatTubeColors.TextPrimary,
                                 focusedBorderColor = ChatTubeColors.Pink,
                                 unfocusedBorderColor = ChatTubeColors.BorderDark
                             ),
@@ -166,8 +166,8 @@ fun AuthScreen(
                             leadingIcon = { Icon(Icons.Default.Phone, contentDescription = "Phone") },
                             modifier = Modifier.fillMaxWidth().testTag("signup_phone_input"),
                             colors = OutlinedTextFieldDefaults.colors(
-                                focusedTextColor = Color.White,
-                                unfocusedTextColor = Color.White,
+                                focusedTextColor = ChatTubeColors.TextPrimary,
+                                unfocusedTextColor = ChatTubeColors.TextPrimary,
                                 focusedBorderColor = ChatTubeColors.Pink,
                                 unfocusedBorderColor = ChatTubeColors.BorderDark
                             ),
@@ -183,8 +183,8 @@ fun AuthScreen(
                             leadingIcon = { Icon(Icons.Default.Lock, contentDescription = "Password") },
                             modifier = Modifier.fillMaxWidth().testTag("signup_password_input"),
                             colors = OutlinedTextFieldDefaults.colors(
-                                focusedTextColor = Color.White,
-                                unfocusedTextColor = Color.White,
+                                focusedTextColor = ChatTubeColors.TextPrimary,
+                                unfocusedTextColor = ChatTubeColors.TextPrimary,
                                 focusedBorderColor = ChatTubeColors.Pink,
                                 unfocusedBorderColor = ChatTubeColors.BorderDark
                             ),
@@ -199,8 +199,8 @@ fun AuthScreen(
                             leadingIcon = { Icon(Icons.Default.Person, contentDescription = "Identifier") },
                             modifier = Modifier.fillMaxWidth().testTag("username_input"),
                             colors = OutlinedTextFieldDefaults.colors(
-                                focusedTextColor = Color.White,
-                                unfocusedTextColor = Color.White,
+                                focusedTextColor = ChatTubeColors.TextPrimary,
+                                unfocusedTextColor = ChatTubeColors.TextPrimary,
                                 focusedBorderColor = ChatTubeColors.Yellow,
                                 unfocusedBorderColor = ChatTubeColors.BorderDark
                             ),
@@ -216,8 +216,8 @@ fun AuthScreen(
                             leadingIcon = { Icon(Icons.Default.Lock, contentDescription = "Password") },
                             modifier = Modifier.fillMaxWidth().testTag("password_input"),
                             colors = OutlinedTextFieldDefaults.colors(
-                                focusedTextColor = Color.White,
-                                unfocusedTextColor = Color.White,
+                                focusedTextColor = ChatTubeColors.TextPrimary,
+                                unfocusedTextColor = ChatTubeColors.TextPrimary,
                                 focusedBorderColor = ChatTubeColors.Yellow,
                                 unfocusedBorderColor = ChatTubeColors.BorderDark
                             ),
@@ -268,14 +268,14 @@ fun AuthScreen(
                             ) {
                                 Text(
                                     text = if (isSignUpMode) "Start Chattubing! 🌈" else "Sign In Safely 🛸",
-                                    color = if (isSignUpMode) Color.White else Color.Black,
+                                    color = if (isSignUpMode) ChatTubeColors.TextPrimary else Color.Black,
                                     fontWeight = FontWeight.Black,
                                     fontSize = 15.sp
                                 )
                                 Icon(
                                     imageVector = Icons.AutoMirrored.Filled.ArrowForward,
                                     contentDescription = "Forward Action",
-                                    tint = if (isSignUpMode) Color.White else Color.Black
+                                    tint = if (isSignUpMode) ChatTubeColors.TextPrimary else Color.Black
                                 )
                             }
                         }

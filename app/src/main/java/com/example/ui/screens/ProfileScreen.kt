@@ -67,7 +67,7 @@ fun ProfileScreen(
                 cropImageOptions = CropImageOptions(
                     imageSourceIncludeGallery = true,
                     imageSourceIncludeCamera = false,
-                    circleCropEnabled = true,
+                    cropShape = com.canhub.cropper.CropImageView.CropShape.OVAL,
                     aspectRatioX = 1,
                     aspectRatioY = 1,
                     fixAspectRatio = true
@@ -103,19 +103,19 @@ fun ProfileScreen(
                             },
                             modifier = Modifier
                                 .clip(CircleShape)
-                                .background(Color.White.copy(alpha = 0.08f))
+                                .background(ChatTubeColors.TextPrimary.copy(alpha = 0.08f))
                         ) {
-                            Icon(Icons.Default.Settings, contentDescription = "Edit Bio", tint = Color.White)
+                            Icon(Icons.Default.Settings, contentDescription = "Edit Bio", tint = ChatTubeColors.TextPrimary)
                         }
 
                         IconButton(
                             onClick = onOpenSettings,
                             modifier = Modifier
                                 .clip(CircleShape)
-                                .background(Color.White.copy(alpha = 0.15f))
+                                .background(ChatTubeColors.TextPrimary.copy(alpha = 0.15f))
                                 .testTag("settings_button")
                         ) {
-                            Icon(Icons.Default.Menu, contentDescription = "Settings", tint = Color.White)
+                            Icon(Icons.Default.Menu, contentDescription = "Settings", tint = ChatTubeColors.TextPrimary)
                         }
                     }
                 }
@@ -154,7 +154,7 @@ fun ProfileScreen(
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Text(
                                 text = userStats?.name ?: "ChatTuber Premium",
-                                color = Color.White,
+                                color = ChatTubeColors.TextPrimary,
                                 fontSize = 18.sp,
                                 fontWeight = FontWeight.Black
                             )
@@ -183,6 +183,22 @@ fun ProfileScreen(
                                 fontWeight = FontWeight.Bold
                             )
                             Icon(Icons.Default.KeyboardArrowDown, contentDescription = "Switch Account", tint = ChatTubeColors.Yellow, modifier = Modifier.size(16.dp))
+                        }
+                        Row(modifier = Modifier.padding(top = 4.dp), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                            Text(
+                                text = "1.2K Followers",
+                                color = ChatTubeColors.TextPrimary,
+                                fontSize = 13.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                modifier = Modifier.clickable {  }
+                            )
+                            Text(
+                                text = "450 Following",
+                                color = ChatTubeColors.TextPrimary,
+                                fontSize = 13.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                modifier = Modifier.clickable {  }
+                            )
                         }
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
@@ -222,7 +238,7 @@ fun ProfileScreen(
                             Text("SNAP SCORE", color = Color.Gray, fontSize = 9.sp, fontWeight = FontWeight.Bold)
                             Text(
                                 "${userStats?.snapScore ?: 0}",
-                                color = Color.White,
+                                color = ChatTubeColors.TextPrimary,
                                 fontSize = 20.sp,
                                 fontWeight = FontWeight.Black
                             )
@@ -276,10 +292,10 @@ fun ProfileScreen(
                                 .background(Color(0xFFFF5500)),
                             contentAlignment = Alignment.Center
                         ) {
-                            Icon(Icons.Default.Bolt, contentDescription = "Active Speed", tint = Color.White)
+                            Icon(Icons.Default.Bolt, contentDescription = "Active Speed", tint = ChatTubeColors.TextPrimary)
                         }
                         Column(modifier = Modifier.weight(1f)) {
-                            Text("Keep Streak Alive! 🔥", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 12.sp)
+                            Text("Keep Streak Alive! 🔥", color = ChatTubeColors.TextPrimary, fontWeight = FontWeight.Bold, fontSize = 12.sp)
                             Text("Publish a rapid streak Tube Post to gain 10 Snap points!", color = Color.LightGray, fontSize = 10.sp)
                         }
                         Icon(Icons.Default.KeyboardArrowRight, contentDescription = "Go", tint = Color.Gray)
@@ -296,7 +312,7 @@ fun ProfileScreen(
                 )
                 Text(
                     text = userStats?.bio ?: "No bio added yet. Tell people about your visual aesthetics in Chattube Studio!",
-                    color = Color.White,
+                    color = ChatTubeColors.TextPrimary,
                     fontSize = 12.sp,
                     lineHeight = 16.sp,
                     modifier = Modifier.padding(bottom = 16.dp)
@@ -332,7 +348,7 @@ fun ProfileScreen(
                 // Grid of My Published creations (Instagram profile style grid!)
                 Text(
                     text = "MY CHATTUBE GRID (${myPosts.size})",
-                    color = Color.White,
+                    color = ChatTubeColors.TextPrimary,
                     fontSize = 13.sp,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(vertical = 10.dp)
@@ -348,7 +364,7 @@ fun ProfileScreen(
                         Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.padding(32.dp)) {
                             Icon(Icons.Default.PhotoLibrary, contentDescription = "Library empty", tint = Color.Gray, modifier = Modifier.size(48.dp))
                             Spacer(modifier = Modifier.height(8.dp))
-                            Text("Your studio is empty! 📭", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                            Text("Your studio is empty! 📭", color = ChatTubeColors.TextPrimary, fontWeight = FontWeight.Bold, fontSize = 14.sp)
                             Text("Take a snap with dynamic lenses in the camera room and send it here!", color = Color.Gray, fontSize = 11.sp, textAlign = TextAlign.Center)
                         }
                     }
@@ -382,13 +398,13 @@ fun ProfileScreen(
                                     Icon(
                                         imageVector = if (post.mediaType == "TUBE") Icons.Default.PlayArrow else Icons.Default.CameraAlt,
                                         contentDescription = "Post preview",
-                                        tint = Color.White.copy(alpha = 0.8f),
+                                        tint = ChatTubeColors.TextPrimary.copy(alpha = 0.8f),
                                         modifier = Modifier.size(24.dp)
                                     )
                                     Spacer(modifier = Modifier.height(4.dp))
                                     Text(
                                         text = if (post.filterApplied != "None") post.filterApplied else "Original",
-                                        color = Color.White,
+                                        color = ChatTubeColors.TextPrimary,
                                         fontSize = 8.sp,
                                         fontWeight = FontWeight.Bold
                                     )
@@ -420,7 +436,7 @@ fun ProfileScreen(
                             modifier = Modifier.padding(20.dp),
                             verticalArrangement = Arrangement.spacedBy(14.dp)
                         ) {
-                            Text("Edit Profile Studio 🎨🎛️", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                            Text("Edit Profile Studio 🎨🎛️", color = ChatTubeColors.TextPrimary, fontWeight = FontWeight.Bold, fontSize = 16.sp)
                             
                             Column {
                                 Text("CREATOR NAME", color = Color.Gray, fontSize = 10.sp, fontWeight = FontWeight.Bold)
@@ -428,8 +444,8 @@ fun ProfileScreen(
                                     value = editNameInput,
                                     onValueChange = { editNameInput = it },
                                     colors = OutlinedTextFieldDefaults.colors(
-                                        focusedTextColor = Color.White,
-                                        unfocusedTextColor = Color.White,
+                                        focusedTextColor = ChatTubeColors.TextPrimary,
+                                        unfocusedTextColor = ChatTubeColors.TextPrimary,
                                         focusedBorderColor = ChatTubeColors.Yellow,
                                         unfocusedBorderColor = ChatTubeColors.BorderDark
                                     ),
@@ -443,8 +459,8 @@ fun ProfileScreen(
                                     value = editBioInput,
                                     onValueChange = { editBioInput = it },
                                     colors = OutlinedTextFieldDefaults.colors(
-                                        focusedTextColor = Color.White,
-                                        unfocusedTextColor = Color.White,
+                                        focusedTextColor = ChatTubeColors.TextPrimary,
+                                        unfocusedTextColor = ChatTubeColors.TextPrimary,
                                         focusedBorderColor = ChatTubeColors.Yellow,
                                         unfocusedBorderColor = ChatTubeColors.BorderDark
                                     ),
@@ -475,7 +491,7 @@ fun ProfileScreen(
                                 OutlinedButton(
                                     onClick = { showEditProfileDialog = false },
                                     modifier = Modifier.weight(1f),
-                                    colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.White)
+                                    colors = ButtonDefaults.outlinedButtonColors(contentColor = ChatTubeColors.TextPrimary)
                                 ) {
                                     Text("Discard")
                                 }
@@ -519,7 +535,7 @@ fun ProfileScreen(
                             Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
                                 Box(modifier = Modifier.width(40.dp).height(4.dp).background(Color.Gray, CircleShape))
                             }
-                            Text("Switch Account", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 16.sp, modifier = Modifier.padding(bottom = 8.dp))
+                            Text("Switch Account", color = ChatTubeColors.TextPrimary, fontWeight = FontWeight.Bold, fontSize = 16.sp, modifier = Modifier.padding(bottom = 8.dp))
                             
                             loggedInAccounts.forEach { account ->
                                 Row(
@@ -536,10 +552,10 @@ fun ProfileScreen(
                                         modifier = Modifier.size(40.dp).clip(CircleShape).background(Color.Gray.copy(alpha = 0.3f)),
                                         contentAlignment = Alignment.Center
                                     ) {
-                                        Icon(Icons.Default.Person, contentDescription = null, tint = Color.White)
+                                        Icon(Icons.Default.Person, contentDescription = null, tint = ChatTubeColors.TextPrimary)
                                     }
                                     Spacer(modifier = Modifier.width(16.dp))
-                                    Text(account.username, color = Color.White, fontSize = 16.sp, modifier = Modifier.weight(1f))
+                                    Text(account.username, color = ChatTubeColors.TextPrimary, fontSize = 16.sp, modifier = Modifier.weight(1f))
                                     if (account.username == userStats?.username) {
                                         Icon(Icons.Default.CheckCircle, contentDescription = "Active", tint = ChatTubeColors.Pink)
                                     }
