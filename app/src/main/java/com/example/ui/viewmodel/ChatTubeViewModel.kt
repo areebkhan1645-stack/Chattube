@@ -77,9 +77,43 @@ class ChatTubeViewModel(application: Application) : AndroidViewModel(application
         }
     }
 
+    private val _uploadError = MutableStateFlow<String?>(null)
+    val uploadError: StateFlow<String?> = _uploadError.asStateFlow()
+
+    fun clearUploadError() {
+        _uploadError.value = null
+    }
+
+    fun uploadReel(mediaUrl: String, caption: String, filterApplied: String = "None") {
+        viewModelScope.launch {
+            val stats = repository.getOrCreateUserStats()
+            val allowUpload = repository.gamifyReelUpload()
+            if (!allowUpload) {
+                _uploadError.value = "Daily Reel upload limit reached! (Max 5/day)"
+                return@launch
+            }
+            repository.addPost(
+                username = stats.username,
+                userAvatarIndex = 0, // 0 is You
+                mediaUrl = mediaUrl,
+                mediaType = "TUBE",
+                caption = caption,
+                filterApplied = filterApplied
+            )
+            repository.incrementStreak() // posting keeps streak alive!
+        }
+    }
+
     fun addPost(mediaUrl: String, mediaType: String, caption: String, filterApplied: String) {
         viewModelScope.launch {
             val stats = repository.getOrCreateUserStats()
+            if (mediaType == "TUBE") {
+                val allowUpload = repository.gamifyReelUpload()
+                if (!allowUpload) {
+                    _uploadError.value = "Daily Reel upload limit reached! (Max 5/day)"
+                    return@launch
+                }
+            }
             repository.addPost(
                 username = stats.username,
                 userAvatarIndex = 0, // 0 is You
@@ -89,9 +123,18 @@ class ChatTubeViewModel(application: Application) : AndroidViewModel(application
                 filterApplied = filterApplied
             )
             repository.incrementStreak() // posting keeps streak alive!
-            if (mediaType == "TUBE") {
-                repository.gamifyReelUpload()
-            }
+        }
+    }
+
+    fun loadAdStory() {
+        viewModelScope.launch {
+            repository.addStory(
+                username = "Sponsored Ad",
+                userAvatarIndex = 2, // some distinct color/avatar
+                mediaUrl = "ad_campaign",
+                isAd = true,
+                rewardCoins = 50
+            )
         }
     }
 

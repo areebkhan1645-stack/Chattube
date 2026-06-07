@@ -39,11 +39,29 @@ class ChatTubeRepository(
         ))
     }
 
-    suspend fun gamifyReelUpload() {
-        val current = userStatsDao.getUserStats() ?: return
+    suspend fun gamifyReelUpload(): Boolean {
+        val current = userStatsDao.getUserStats() ?: return false
         val newCoins = current.coins + 1
         val newIsVip = current.isVip || newCoins >= 400
-        userStatsDao.updateUserStats(current.copy(coins = newCoins, isVip = newIsVip))
+        
+        val today = System.currentTimeMillis() / (1000 * 60 * 60 * 24)
+        val lastDate = current.lastUploadDate / (1000 * 60 * 60 * 24)
+        
+        val newUploadsToday = if (today != lastDate) 1 else current.uploadsToday + 1
+        val isLimitReached = newUploadsToday > 5 // Daily limit of 5 uploads
+        
+        if (today == lastDate && isLimitReached) {
+            return false // Limit reached
+        }
+        
+        userStatsDao.updateUserStats(current.copy(
+            coins = newCoins, 
+            isVip = newIsVip,
+            uploadsToday = newUploadsToday,
+            lastUploadDate = System.currentTimeMillis()
+        ))
+        
+        return true
     }
 
     suspend fun updateUserProfile(name: String, bio: String, serverRegion: String) {
@@ -130,20 +148,31 @@ class ChatTubeRepository(
         postDao.updatePostLiked(postId, isLiked)
     }
 
-    suspend fun addStory(username: String, userAvatarIndex: Int, mediaUrl: String) {
+    suspend fun addStory(username: String, userAvatarIndex: Int, mediaUrl: String, isAd: Boolean = false, rewardCoins: Int = 0) {
         val newStory = StoryEntity(
             username = username,
             userAvatarIndex = userAvatarIndex,
             mediaUrl = mediaUrl,
             durationSeconds = 5,
-            isViewed = false
+            isViewed = false,
+            isAd = isAd,
+            rewardCoins = rewardCoins
         )
         storyDao.insertStory(newStory)
         incrementSnapScore(10)
     }
 
     suspend fun markStoryAsViewed(storyId: Long) {
-        storyDao.markStoryAsViewed(storyId)
+        val story = storyDao.getStoryById(storyId)
+        if (story != null && !story.isViewed) {
+            storyDao.markStoryAsViewed(storyId)
+            if (story.isAd && story.rewardCoins > 0) {
+                val currentStats = userStatsDao.getUserStats()
+                if (currentStats != null) {
+                    userStatsDao.updateUserStats(currentStats.copy(coins = currentStats.coins + story.rewardCoins))
+                }
+            }
+        }
     }
 
     suspend fun sendMessage(sender: String, receiver: String, type: String, content: String, duration: Int = 5, filter: String = "None") {

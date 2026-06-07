@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import com.google.android.gms.ads.MobileAds
 import androidx.compose.animation.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -40,6 +41,7 @@ enum class ChatTubeTab(val label: String) {
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        MobileAds.initialize(this) {}
         enableEdgeToEdge()
         setContent {
             MyApplicationTheme {
@@ -48,6 +50,7 @@ class MainActivity : ComponentActivity() {
                 var currentTab by remember { mutableStateOf(ChatTubeTab.FEED) }
                 var isSettingsOpen by remember { mutableStateOf(false) }
                 var isAddingAccount by remember { mutableStateOf(false) }
+                var isGestureUnlocked by remember { mutableStateOf(false) }
 
                 LaunchedEffect(userStats?.username) {
                     if (userStats?.isLoggedIn == true) {
@@ -55,7 +58,11 @@ class MainActivity : ComponentActivity() {
                     }
                 }
 
-                if ((userStats == null || !userStats!!.isLoggedIn) || isAddingAccount) {
+                if (!isGestureUnlocked) {
+                    GestureLockScreen(
+                        onUnlocked = { isGestureUnlocked = true }
+                    )
+                } else if ((userStats == null || !userStats!!.isLoggedIn) || isAddingAccount) {
                     // Instagram-style Secure signup and login screen interceptor
                     AuthScreen(viewModel = viewModel)
                 } else if (isSettingsOpen) {

@@ -62,11 +62,26 @@ interface StoryDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertStory(story: StoryEntity)
 
+    @Query("SELECT * FROM stories WHERE id = :storyId LIMIT 1")
+    suspend fun getStoryById(storyId: Long): StoryEntity?
+
     @Query("UPDATE stories SET isViewed = 1 WHERE id = :storyId")
     suspend fun markStoryAsViewed(storyId: Long)
 
     @Query("DELETE FROM stories")
     suspend fun clearAllStories()
+}
+
+@Dao
+interface ChatGroupDao {
+    @Query("SELECT * FROM chat_groups ORDER BY timestamp DESC")
+    fun getAllGroups(): Flow<List<ChatGroupEntity>>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertGroup(group: ChatGroupEntity): Long
+
+    @Query("DELETE FROM chat_groups")
+    suspend fun clearAllGroups()
 }
 
 @Dao

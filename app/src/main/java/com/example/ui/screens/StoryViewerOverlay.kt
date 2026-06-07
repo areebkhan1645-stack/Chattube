@@ -9,6 +9,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Schedule
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -135,8 +136,13 @@ fun StoryViewerOverlay(
                             Column {
                                 Text(currentStory.username, color = ChatTubeColors.TextPrimary, fontWeight = FontWeight.Bold, fontSize = 14.sp)
                                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                                    Icon(Icons.Default.Schedule, contentDescription = "Active time", tint = Color.LightGray, modifier = Modifier.size(10.dp))
-                                    Text("Lensed Story • Auto-playing", color = Color.LightGray, fontSize = 9.sp)
+                                    if (currentStory.isAd) {
+                                        Icon(Icons.Default.Star, contentDescription = "Sponsor", tint = ChatTubeColors.Pink, modifier = Modifier.size(10.dp))
+                                        Text("Sponsored • ${currentStory.rewardCoins} Coins Reward", color = ChatTubeColors.Pink, fontSize = 10.sp, fontWeight = FontWeight.Bold)
+                                    } else {
+                                        Icon(Icons.Default.Schedule, contentDescription = "Active time", tint = Color.LightGray, modifier = Modifier.size(10.dp))
+                                        Text("Lensed Story • Auto-playing", color = Color.LightGray, fontSize = 9.sp)
+                                    }
                                 }
                             }
                         }
@@ -158,25 +164,55 @@ fun StoryViewerOverlay(
                     verticalArrangement = Arrangement.Center,
                     modifier = Modifier.weight(1f)
                 ) {
-                    Text(
-                        currentStory.username.uppercase() + " SNAP!",
-                        color = ChatTubeColors.TextPrimary.copy(alpha = 0.5f),
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Bold,
-                        letterSpacing = 2.sp
-                    )
-                    Spacer(modifier = Modifier.height(10.dp))
-                    Text(
-                        "🎬 Daily Vlog Vibe",
-                        color = ChatTubeColors.TextPrimary,
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Black
-                    )
-                    Text(
-                        "Check out this amazing filter effect on Chattube!",
-                        color = Color.LightGray,
-                        fontSize = 14.sp
-                    )
+                    if (currentStory.isAd) {
+                        Text(
+                            "SUPPORT OUR CREATORS!",
+                            color = ChatTubeColors.Pink,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold,
+                            letterSpacing = 2.sp
+                        )
+                        Spacer(modifier = Modifier.height(10.dp))
+                        
+                        androidx.compose.ui.viewinterop.AndroidView(
+                            modifier = Modifier.fillMaxWidth(),
+                            factory = { context ->
+                                com.google.android.gms.ads.AdView(context).apply {
+                                    setAdSize(com.google.android.gms.ads.AdSize.MEDIUM_RECTANGLE)
+                                    // Use a test ad unit ID for banners
+                                    adUnitId = "ca-app-pub-5759369257176904/7854011267"
+                                    loadAd(com.google.android.gms.ads.AdRequest.Builder().build())
+                                }
+                            }
+                        )
+                        
+                        Spacer(modifier = Modifier.height(10.dp))
+                        Text(
+                            "Watch to earn ${currentStory.rewardCoins} coins!",
+                            color = ChatTubeColors.TextPrimary,
+                            fontSize = 14.sp
+                        )
+                    } else {
+                        Text(
+                            currentStory.username.uppercase() + " SNAP!",
+                            color = ChatTubeColors.TextPrimary.copy(alpha = 0.5f),
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold,
+                            letterSpacing = 2.sp
+                        )
+                        Spacer(modifier = Modifier.height(10.dp))
+                        Text(
+                            "🎬 Daily Vlog Vibe",
+                            color = ChatTubeColors.TextPrimary,
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.Black
+                        )
+                        Text(
+                            "Check out this amazing filter effect on Chattube!",
+                            color = Color.LightGray,
+                            fontSize = 14.sp
+                        )
+                    }
                 }
 
                 // Interactive skip Zones left and right (Snapchat/Instagram layout mechanism!)

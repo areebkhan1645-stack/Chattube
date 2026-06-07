@@ -44,7 +44,7 @@ fun ChatScreen(
     var snapCountdownValue by remember { mutableIntStateOf(5) }
 
     // Aggregate unique friends we had chat interactions with
-    val defaultContactNames = listOf("Sarah Travels", "Alex Vlogs", "Jake Skates", "Foodie Vibes")
+    val defaultContactNames = listOf("Sarah Travels", "Creators Squad (Group)", "Alex Vlogs", "Travel Buddies (Group)", "Jake Skates", "Foodie Vibes")
 
     // Dynamic timer for snap destruction
     if (activeViewingSnap != null) {
@@ -218,8 +218,8 @@ fun ChatScreen(
                                     colors = OutlinedTextFieldDefaults.colors(
                                         focusedTextColor = ChatTubeColors.TextPrimary,
                                         unfocusedTextColor = ChatTubeColors.TextPrimary,
-                                        focusedContainerColor = Color.Black,
-                                        unfocusedContainerColor = Color.Black,
+                                        focusedContainerColor = ChatTubeColors.SurfaceDark,
+                                        unfocusedContainerColor = ChatTubeColors.SurfaceDark,
                                         focusedBorderColor = ChatTubeColors.Pink,
                                         unfocusedBorderColor = Color.Transparent
                                     ),

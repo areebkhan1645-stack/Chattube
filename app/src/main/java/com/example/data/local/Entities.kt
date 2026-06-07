@@ -19,7 +19,9 @@ data class UserStatsEntity(
     val isVip: Boolean = false,
     val profilePicUri: String? = null,
     val isLoggedIn: Boolean = false,
-    val isActive: Boolean = false
+    val isActive: Boolean = false,
+    val uploadsToday: Int = 0,
+    val lastUploadDate: Long = 0L
 )
 
 @Entity(tableName = "posts")
@@ -45,6 +47,17 @@ data class StoryEntity(
     val mediaUrl: String,
     val durationSeconds: Int = 5,
     val isViewed: Boolean = false,
+    val timestamp: Long = System.currentTimeMillis(),
+    val isAd: Boolean = false,
+    val rewardCoins: Int = 0
+)
+
+@Entity(tableName = "chat_groups")
+data class ChatGroupEntity(
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    val groupName: String,
+    val participantsList: String, // Comma separated mock names
+    val avatarUrl: String = "",
     val timestamp: Long = System.currentTimeMillis()
 )
 
@@ -53,6 +66,7 @@ data class MessageEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val senderName: String,
     val receiverName: String,
+    val groupId: Long? = null, // if not null, it's a group message
     val messageType: String, // "TEXT" or "SNAP"
     val content: String, // actual text message or description/reference to a Snap camera capture
     val isOpened: Boolean = false, // Snapchat-style open once state

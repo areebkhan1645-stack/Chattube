@@ -67,9 +67,20 @@ fun FeedScreen(
         )
     }
 
+    val snackbarHostState = remember { SnackbarHostState() }
+    val uploadError by viewModel.uploadError.collectAsState()
+
+    LaunchedEffect(uploadError) {
+        if (uploadError != null) {
+            snackbarHostState.showSnackbar(uploadError!!)
+            viewModel.clearUploadError()
+        }
+    }
+
     Scaffold(
         modifier = modifier.fillMaxSize(),
         containerColor = ChatTubeColors.DarkBackground,
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             Column(modifier = Modifier.background(ChatTubeColors.DarkBackground)) {
                 GlassmorphicHeader(
@@ -161,13 +172,31 @@ fun FeedScreen(
                                 .fillMaxWidth()
                                 .padding(vertical = 4.dp)
                         ) {
-                            Text(
-                                text = "Daily Stories",
-                                color = ChatTubeColors.TextPrimary.copy(alpha = 0.8f),
-                                fontSize = 14.sp,
-                                fontWeight = FontWeight.Bold,
-                                modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
-                            )
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 16.dp, vertical = 2.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = "Daily Stories",
+                                    color = ChatTubeColors.TextPrimary.copy(alpha = 0.8f),
+                                    fontSize = 14.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
+
+                                TextButton(onClick = { viewModel.loadAdStory() }) {
+                                    Icon(
+                                        imageVector = Icons.Default.Star,
+                                        contentDescription = "Earn Coins",
+                                        tint = ChatTubeColors.Pink,
+                                        modifier = Modifier.size(16.dp)
+                                    )
+                                    Spacer(modifier = Modifier.width(4.dp))
+                                    Text("Earn Money (Load Ad)", color = ChatTubeColors.Pink, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                                }
+                            }
                             
                             LazyRow(
                                 contentPadding = PaddingValues(horizontal = 16.dp),
@@ -558,9 +587,8 @@ fun FeedScreen(
                 Button(
                     onClick = {
                         if (videoSelected) {
-                            viewModel.addPost(
+                            viewModel.uploadReel(
                                 mediaUrl = "sample_reel",
-                                mediaType = "TUBE", // TUBE implies reel here, based on existing logic
                                 caption = caption,
                                 filterApplied = "Normal"
                             )
