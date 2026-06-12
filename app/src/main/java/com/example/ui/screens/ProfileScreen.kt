@@ -158,19 +158,14 @@ fun ProfileScreen(
                                 fontSize = 18.sp,
                                 fontWeight = FontWeight.Black
                             )
-                            if (userStats?.isVip == true) {
-                                Spacer(modifier = Modifier.width(6.dp))
-                                Box(
-                                    modifier = Modifier
-                                        .background(
-                                            brush = Brush.horizontalGradient(listOf(Color(0xFFFFD700), Color(0xFFFFA500))),
-                                            shape = RoundedCornerShape(4.dp)
-                                        )
-                                        .padding(horizontal = 6.dp, vertical = 2.dp)
-                                ) {
-                                    Text("VIP", color = Color.Black, fontSize = 10.sp, fontWeight = FontWeight.ExtraBold)
-                                }
+                            val coins = userStats?.coins ?: 0
+                            val profileRank = when {
+                                coins >= 1600 -> "Pro Max VIP"
+                                coins >= 800 -> "Pro VIP"
+                                coins >= 400 -> "VIP"
+                                else -> "None"
                             }
+                            RankBadge(rank = profileRank, modifier = Modifier.padding(start = 6.dp))
                         }
                         Row(
                             verticalAlignment = Alignment.CenterVertically,

@@ -1,6 +1,12 @@
 package com.example
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.content.Context
+import android.os.Build
 import android.os.Bundle
+import android.widget.Toast
+import androidx.core.app.NotificationCompat
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -51,6 +57,17 @@ class MainActivity : ComponentActivity() {
                 var isSettingsOpen by remember { mutableStateOf(false) }
                 var isAddingAccount by remember { mutableStateOf(false) }
                 var isGestureUnlocked by remember { mutableStateOf(false) }
+
+                LaunchedEffect(Unit) {
+                    viewModel.newlyUnlockedTier.collect { tier ->
+                        Toast.makeText(
+                            this@MainActivity,
+                            "Congratulations! You have unlocked the $tier badge!",
+                            Toast.LENGTH_LONG
+                        ).show()
+                        sendGamificationNotification(this@MainActivity, tier)
+                    }
+                }
 
                 LaunchedEffect(userStats?.username) {
                     if (userStats?.isLoggedIn == true) {
@@ -198,4 +215,29 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+}
+
+fun sendGamificationNotification(context: Context, tier: String) {
+    val channelId = "gamification_channel"
+    val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        val channel = NotificationChannel(
+            channelId,
+            "Gamification Alerts",
+            NotificationManager.IMPORTANCE_HIGH
+        ).apply {
+            description = "Notifications for tier unlocks and achievements"
+        }
+        notificationManager.createNotificationChannel(channel)
+    }
+
+    val builder = NotificationCompat.Builder(context, channelId)
+        .setSmallIcon(android.R.drawable.star_on) // Use default star icon or any available icon
+        .setContentTitle("Tier Unlocked!")
+        .setContentText("Congratulations! You have unlocked the $tier badge on Chattube. Keep creating!")
+        .setPriority(NotificationCompat.PRIORITY_HIGH)
+        .setAutoCancel(true)
+
+    notificationManager.notify(System.currentTimeMillis().toInt(), builder.build())
 }

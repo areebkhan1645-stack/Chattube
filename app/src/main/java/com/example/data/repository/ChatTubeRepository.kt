@@ -39,19 +39,35 @@ class ChatTubeRepository(
         ))
     }
 
-    suspend fun gamifyReelUpload(): Boolean {
-        val current = userStatsDao.getUserStats() ?: return false
+    suspend fun gamifyReelUpload(): Pair<Boolean, String?> {
+        val current = userStatsDao.getUserStats() ?: return Pair(false, null)
+        
+        val wasProMaxVip = current.coins >= 1600
+        val wasProVip = current.coins >= 800 && current.coins < 1600
+        val wasVip = current.coins >= 400 && current.coins < 800
+
         val newCoins = current.coins + 1
         val newIsVip = current.isVip || newCoins >= 400
+        
+        val isNowProMaxVip = newCoins >= 1600
+        val isNowProVip = newCoins >= 800 && newCoins < 1600
+        val isNowVip = newCoins >= 400 && newCoins < 800
+
+        val newlyUnlockedTier = when {
+            isNowProMaxVip && !wasProMaxVip -> "Pro Max VIP"
+            isNowProVip && !wasProVip -> "Pro VIP"
+            isNowVip && !wasVip -> "VIP"
+            else -> null
+        }
         
         val today = System.currentTimeMillis() / (1000 * 60 * 60 * 24)
         val lastDate = current.lastUploadDate / (1000 * 60 * 60 * 24)
         
         val newUploadsToday = if (today != lastDate) 1 else current.uploadsToday + 1
-        val isLimitReached = newUploadsToday > 5 // Daily limit of 5 uploads
+        val isLimitReached = newUploadsToday > 5000 // Remove daily limit constraint for gamification testing
         
         if (today == lastDate && isLimitReached) {
-            return false // Limit reached
+            return Pair(false, null) // Limit reached
         }
         
         userStatsDao.updateUserStats(current.copy(
@@ -61,7 +77,7 @@ class ChatTubeRepository(
             lastUploadDate = System.currentTimeMillis()
         ))
         
-        return true
+        return Pair(true, newlyUnlockedTier)
     }
 
     suspend fun updateUserProfile(name: String, bio: String, serverRegion: String) {
@@ -127,7 +143,8 @@ class ChatTubeRepository(
         mediaUrl: String,
         mediaType: String,
         caption: String,
-        filterApplied: String = "None"
+        filterApplied: String = "None",
+        rankTag: String = ""
     ) {
         val newPost = PostEntity(
             username = username,
@@ -138,7 +155,8 @@ class ChatTubeRepository(
             likesCount = 0,
             isLiked = false,
             commentsCount = 0,
-            filterApplied = filterApplied
+            filterApplied = filterApplied,
+            rankTag = rankTag
         )
         postDao.insertPost(newPost)
         incrementSnapScore(15) // earn points for posting!
@@ -148,7 +166,7 @@ class ChatTubeRepository(
         postDao.updatePostLiked(postId, isLiked)
     }
 
-    suspend fun addStory(username: String, userAvatarIndex: Int, mediaUrl: String, isAd: Boolean = false, rewardCoins: Int = 0) {
+    suspend fun addStory(username: String, userAvatarIndex: Int, mediaUrl: String, isAd: Boolean = false, rewardCoins: Int = 0, rankTag: String = "") {
         val newStory = StoryEntity(
             username = username,
             userAvatarIndex = userAvatarIndex,
@@ -156,7 +174,8 @@ class ChatTubeRepository(
             durationSeconds = 5,
             isViewed = false,
             isAd = isAd,
-            rewardCoins = rewardCoins
+            rewardCoins = rewardCoins,
+            rankTag = rankTag
         )
         storyDao.insertStory(newStory)
         incrementSnapScore(10)

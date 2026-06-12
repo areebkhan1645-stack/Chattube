@@ -330,3 +330,30 @@ fun GlassmorphicHeader(
         }
     }
 }
+
+@Composable
+fun RankBadge(rank: String, modifier: Modifier = Modifier) {
+    if (rank.isBlank() || rank == "None") return
+
+    val (colors, text) = when (rank) {
+        "Pro Max VIP" -> listOf(Color(0xFFFFD700), Color(0xFFFF8C00)) to "PRO MAX VIP"
+        "Pro VIP" -> listOf(Color(0xFF00E5FF), Color(0xFF00BFFF)) to "PRO VIP"
+        "VIP" -> listOf(Color(0xFFE1306C), Color(0xFFC13584)) to "VIP"
+        else -> listOf(Color.Gray, Color.DarkGray) to rank.uppercase()
+    }
+
+    Box(
+        modifier = modifier
+            .clip(RoundedCornerShape(4.dp))
+            .background(Brush.linearGradient(colors))
+            .padding(horizontal = 4.dp, vertical = 2.dp)
+    ) {
+        Text(
+            text = text,
+            color = Color.Black,
+            fontSize = 9.sp,
+            fontWeight = FontWeight.Black,
+            letterSpacing = 0.5.sp
+        )
+    }
+}

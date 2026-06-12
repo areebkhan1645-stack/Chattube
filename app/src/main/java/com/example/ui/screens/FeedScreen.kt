@@ -351,6 +351,19 @@ fun FeedScreen(
                                 Text("${currentReel.commentsCount}", color = ChatTubeColors.TextPrimary, fontSize = 11.sp, fontWeight = FontWeight.Bold)
                             }
 
+                            // Share
+                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                IconButton(
+                                    onClick = { /* Implement generic share later */ },
+                                    modifier = Modifier
+                                        .clip(CircleShape)
+                                        .background(Color.Black.copy(alpha = 0.4f))
+                                ) {
+                                    Icon(Icons.Default.Share, contentDescription = "Share", tint = ChatTubeColors.TextPrimary)
+                                }
+                                Text("Share", color = ChatTubeColors.TextPrimary, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                            }
+
                             // Easy next reel navigation (infinite looping)
                             IconButton(
                                 onClick = { activeReelIndex++ },
@@ -378,19 +391,7 @@ fun FeedScreen(
                                     fontWeight = FontWeight.Black,
                                     fontSize = 15.sp
                                 )
-                                if (currentReel.username == userStats?.username && userStats?.isVip == true) {
-                                    Spacer(modifier = Modifier.width(6.dp))
-                                    Box(
-                                        modifier = Modifier
-                                            .background(
-                                                brush = Brush.horizontalGradient(listOf(Color(0xFFFFD700), Color(0xFFFFA500))),
-                                                shape = RoundedCornerShape(4.dp)
-                                            )
-                                            .padding(horizontal = 6.dp, vertical = 2.dp)
-                                    ) {
-                                        Text("VIP", color = Color.Black, fontSize = 10.sp, fontWeight = FontWeight.ExtraBold)
-                                    }
-                                }
+                                RankBadge(rank = currentReel.rankTag, modifier = Modifier.padding(start = 6.dp))
                             }
                             Text(
                                 text = currentReel.caption,
@@ -469,12 +470,24 @@ fun FeedScreen(
                                     ) {
                                         UserAvatar(username = comment.first, avatarIndex = comment.first.hashCode(), size = 32.dp)
                                         Column {
-                                            Text(
-                                                text = comment.first,
-                                                color = ChatTubeColors.TextPrimary,
-                                                fontWeight = FontWeight.Bold,
-                                                fontSize = 13.sp
-                                            )
+                                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                                Text(
+                                                    text = comment.first,
+                                                    color = ChatTubeColors.TextPrimary,
+                                                    fontWeight = FontWeight.Bold,
+                                                    fontSize = 13.sp
+                                                )
+                                                val rank = if (comment.first == userStats?.username) {
+                                                    val coins = userStats?.coins ?: 0
+                                                    when {
+                                                        coins >= 1600 -> "Pro Max VIP"
+                                                        coins >= 800 -> "Pro VIP"
+                                                        coins >= 400 -> "VIP"
+                                                        else -> "None"
+                                                    }
+                                                } else "None"
+                                                RankBadge(rank = rank, modifier = Modifier.padding(start = 6.dp))
+                                            }
                                             Text(
                                                 text = comment.second,
                                                 color = Color.LightGray,
@@ -699,6 +712,7 @@ fun PostItemCard(
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Bold
                         )
+                        RankBadge(rank = post.rankTag, modifier = Modifier.padding(start = 6.dp))
                         if (post.mediaType == "TUBE") {
                             Spacer(modifier = Modifier.width(6.dp))
                             Box(
@@ -965,6 +979,7 @@ fun PostItemCard(
                         fontSize = 12.sp,
                         modifier = Modifier.padding(end = 6.dp)
                     )
+                    RankBadge(rank = post.rankTag, modifier = Modifier.padding(end = 6.dp))
                     Text(
                         text = post.caption,
                         color = Color.LightGray,

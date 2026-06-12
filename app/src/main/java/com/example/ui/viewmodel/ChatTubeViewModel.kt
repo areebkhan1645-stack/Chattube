@@ -80,6 +80,9 @@ class ChatTubeViewModel(application: Application) : AndroidViewModel(application
     private val _uploadError = MutableStateFlow<String?>(null)
     val uploadError: StateFlow<String?> = _uploadError.asStateFlow()
 
+    private val _newlyUnlockedTier = MutableSharedFlow<String>()
+    val newlyUnlockedTier = _newlyUnlockedTier.asSharedFlow()
+
     fun clearUploadError() {
         _uploadError.value = null
     }
@@ -87,18 +90,21 @@ class ChatTubeViewModel(application: Application) : AndroidViewModel(application
     fun uploadReel(mediaUrl: String, caption: String, filterApplied: String = "None") {
         viewModelScope.launch {
             val stats = repository.getOrCreateUserStats()
-            val allowUpload = repository.gamifyReelUpload()
+            val (allowUpload, newTier) = repository.gamifyReelUpload()
             if (!allowUpload) {
-                _uploadError.value = "Daily Reel upload limit reached! (Max 5/day)"
+                _uploadError.value = "Daily Reel upload limit reached!"
                 return@launch
             }
+            newTier?.let { _newlyUnlockedTier.emit(it) }
+            
             repository.addPost(
                 username = stats.username,
                 userAvatarIndex = 0, // 0 is You
                 mediaUrl = mediaUrl,
                 mediaType = "TUBE",
                 caption = caption,
-                filterApplied = filterApplied
+                filterApplied = filterApplied,
+                rankTag = newTier ?: getRankTagFromCoins(stats.coins + 1)
             )
             repository.incrementStreak() // posting keeps streak alive!
         }
@@ -107,12 +113,15 @@ class ChatTubeViewModel(application: Application) : AndroidViewModel(application
     fun addPost(mediaUrl: String, mediaType: String, caption: String, filterApplied: String) {
         viewModelScope.launch {
             val stats = repository.getOrCreateUserStats()
+            var currentRankTag = getRankTagFromCoins(stats.coins)
             if (mediaType == "TUBE") {
-                val allowUpload = repository.gamifyReelUpload()
+                val (allowUpload, newTier) = repository.gamifyReelUpload()
                 if (!allowUpload) {
-                    _uploadError.value = "Daily Reel upload limit reached! (Max 5/day)"
+                    _uploadError.value = "Daily Reel upload limit reached!"
                     return@launch
                 }
+                newTier?.let { _newlyUnlockedTier.emit(it) }
+                if (newTier != null) currentRankTag = newTier
             }
             repository.addPost(
                 username = stats.username,
@@ -120,9 +129,19 @@ class ChatTubeViewModel(application: Application) : AndroidViewModel(application
                 mediaUrl = mediaUrl,
                 mediaType = mediaType,
                 caption = caption,
-                filterApplied = filterApplied
+                filterApplied = filterApplied,
+                rankTag = currentRankTag
             )
             repository.incrementStreak() // posting keeps streak alive!
+        }
+    }
+
+    private fun getRankTagFromCoins(coins: Int): String {
+        return when {
+            coins >= 1600 -> "Pro Max VIP"
+            coins >= 800 -> "Pro VIP"
+            coins >= 400 -> "VIP"
+            else -> ""
         }
     }
 

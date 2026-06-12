@@ -36,7 +36,8 @@ data class PostEntity(
     val isLiked: Boolean,
     val commentsCount: Int,
     val timestamp: Long = System.currentTimeMillis(),
-    val filterApplied: String = "None"
+    val filterApplied: String = "None",
+    val rankTag: String = "" // VIP, Pro VIP, Pro Max VIP
 )
 
 @Entity(tableName = "stories")
@@ -49,7 +50,8 @@ data class StoryEntity(
     val isViewed: Boolean = false,
     val timestamp: Long = System.currentTimeMillis(),
     val isAd: Boolean = false,
-    val rewardCoins: Int = 0
+    val rewardCoins: Int = 0,
+    val rankTag: String = "" // VIP, Pro VIP, Pro Max VIP
 )
 
 @Entity(tableName = "chat_groups")
