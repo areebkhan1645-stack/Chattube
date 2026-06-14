@@ -351,15 +351,14 @@ fun ExploreScreen(
                                         verticalAlignment = Alignment.CenterVertically,
                                         modifier = Modifier.fillMaxWidth()
                                     ) {
-                                        Button(
+                                        LiquidGlassButton(
                                             onClick = {
                                                 viewModel.likePost(post.id, post.isLiked)
                                                 previewingPost = previewingPost?.copy(
                                                     isLiked = !post.isLiked,
                                                     likesCount = post.likesCount + if (!post.isLiked) 1 else -1
                                                 )
-                                            },
-                                            colors = ButtonDefaults.buttonColors(containerColor = if (post.isLiked) ChatTubeColors.Pink else Color.Black.copy(alpha = 0.5f))
+                                            }
                                         ) {
                                             Text(if (post.isLiked) "❤️ Liked (${post.likesCount})" else "🤍 Like (${post.likesCount})", color = ChatTubeColors.TextPrimary, fontWeight = FontWeight.Bold)
                                         }

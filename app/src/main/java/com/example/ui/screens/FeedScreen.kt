@@ -1,5 +1,10 @@
 package com.example.ui.screens
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -32,6 +37,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
 import com.example.data.local.PostEntity
 import com.example.data.local.UserStatsEntity
 import com.example.data.local.StoryEntity
@@ -551,6 +557,37 @@ fun FeedScreen(
         ) {
             var caption by remember { mutableStateOf("") }
             var videoSelected by remember { mutableStateOf(false) }
+            val context = LocalContext.current
+            
+            // Check for media permissions before letting them select
+            val mediaPermission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                Manifest.permission.READ_MEDIA_VIDEO
+            } else {
+                Manifest.permission.READ_EXTERNAL_STORAGE
+            }
+            
+            var hasMediaPermission by remember {
+                mutableStateOf(
+                    ContextCompat.checkSelfPermission(context, mediaPermission) == PackageManager.PERMISSION_GRANTED
+                )
+            }
+            
+            val mediaPickerLauncher = rememberLauncherForActivityResult(
+                contract = ActivityResultContracts.GetContent()
+            ) { uri ->
+                if (uri != null) {
+                    videoSelected = true
+                }
+            }
+            
+            val permissionLauncher = rememberLauncherForActivityResult(
+                contract = ActivityResultContracts.RequestPermission()
+            ) { granted ->
+                hasMediaPermission = granted
+                if (granted) {
+                    mediaPickerLauncher.launch("video/*") // auto launch after granted
+                }
+            }
             
             Column(
                 modifier = Modifier
@@ -561,23 +598,43 @@ fun FeedScreen(
             ) {
                 Text("Upload a New Reel", color = ChatTubeColors.TextPrimary, fontSize = 20.sp, fontWeight = FontWeight.Black)
 
-                // Placeholder for Video Selection Area
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(120.dp)
-                        .clip(RoundedCornerShape(12.dp))
-                        .background(ChatTubeColors.DarkBackground)
-                        .clickable { videoSelected = true },
-                    contentAlignment = Alignment.Center
-                ) {
-                    if (videoSelected) {
-                        Text("🎥 video_01.mp4 selected", color = ChatTubeColors.Pink, fontWeight = FontWeight.Bold)
-                    } else {
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Icon(Icons.Default.VideoLibrary, contentDescription = null, tint = ChatTubeColors.TextSecondary, modifier = Modifier.size(32.dp))
+                if (!hasMediaPermission) {
+                    // Show a designated permission button as requested
+                    Card(
+                        modifier = Modifier.fillMaxWidth().clickable {
+                            permissionLauncher.launch(mediaPermission)
+                        },
+                        colors = CardDefaults.cardColors(containerColor = ChatTubeColors.DarkBackground)
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(16.dp).fillMaxWidth(),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Icon(Icons.Default.Folder, contentDescription = "Folder", tint = ChatTubeColors.Yellow, modifier = Modifier.size(32.dp))
                             Spacer(modifier = Modifier.height(8.dp))
-                            Text("Select Video from Gallery", color = ChatTubeColors.TextSecondary, fontSize = 14.sp)
+                            Text("Storage Permission Required", color = ChatTubeColors.TextPrimary, fontWeight = FontWeight.Bold)
+                            Text("Tap to Grant Permission", color = ChatTubeColors.TextSecondary, fontSize = 12.sp)
+                        }
+                    }
+                } else {
+                    // Placeholder for Video Selection Area
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(120.dp)
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(ChatTubeColors.DarkBackground)
+                            .clickable { mediaPickerLauncher.launch("video/*") },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        if (videoSelected) {
+                            Text("🎥 video_01.mp4 selected", color = ChatTubeColors.Pink, fontWeight = FontWeight.Bold)
+                        } else {
+                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                Icon(Icons.Default.VideoLibrary, contentDescription = null, tint = ChatTubeColors.TextSecondary, modifier = Modifier.size(32.dp))
+                                Spacer(modifier = Modifier.height(8.dp))
+                                Text("Select Video from Gallery", color = ChatTubeColors.TextSecondary, fontSize = 14.sp)
+                            }
                         }
                     }
                 }
@@ -597,7 +654,7 @@ fun FeedScreen(
                     maxLines = 3
                 )
                 
-                Button(
+                LiquidGlassButton(
                     onClick = {
                         if (videoSelected) {
                             viewModel.uploadReel(
@@ -611,8 +668,7 @@ fun FeedScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(50.dp),
-                    enabled = videoSelected && caption.isNotEmpty(),
-                    colors = ButtonDefaults.buttonColors(containerColor = ChatTubeColors.Pink)
+                    enabled = videoSelected && caption.isNotEmpty()
                 ) {
                     Text("Publish Reel", color = ChatTubeColors.SurfaceDark, fontWeight = FontWeight.Bold, fontSize = 16.sp)
                 }

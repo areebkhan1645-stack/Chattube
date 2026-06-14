@@ -226,7 +226,7 @@ fun AuthScreen(
                     }
 
                     // Main Action Button (Instagram / Snapchat design merge button)
-                    Button(
+                    LiquidGlassButton(
                         onClick = {
                             if (isSignUpMode) {
                                 if (nameInput.trim().isEmpty() || usernameInput.trim().isEmpty() || passwordInput.isEmpty()) {
@@ -248,36 +248,26 @@ fun AuthScreen(
                                 }
                             }
                         },
-                        colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
-                        contentPadding = PaddingValues(),
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(52.dp)
                             .testTag("auth_submit_button")
-                            .clip(RoundedCornerShape(16.dp))
                     ) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .background(Brush.linearGradient(if (isSignUpMode) ChatTubeColors.Instagradient else ChatTubeColors.Snapgradient)),
-                            contentAlignment = Alignment.Center
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(8.dp)
-                            ) {
-                                Text(
-                                    text = if (isSignUpMode) "Start Chattubing! 🌈" else "Sign In Safely 🛸",
-                                    color = if (isSignUpMode) ChatTubeColors.TextPrimary else Color.Black,
-                                    fontWeight = FontWeight.Black,
-                                    fontSize = 15.sp
-                                )
-                                Icon(
-                                    imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                                    contentDescription = "Forward Action",
-                                    tint = if (isSignUpMode) ChatTubeColors.TextPrimary else Color.Black
-                                )
-                            }
+                            Text(
+                                text = if (isSignUpMode) "Start Chattubing! 🌈" else "Sign In Safely 🛸",
+                                color = Color.White,
+                                fontWeight = FontWeight.Black,
+                                fontSize = 15.sp
+                            )
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                                contentDescription = "Forward Action",
+                                tint = Color.White
+                            )
                         }
                     }
 

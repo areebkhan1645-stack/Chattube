@@ -1,5 +1,9 @@
 package com.example.ui.screens
 
+import android.Manifest
+import android.content.pm.PackageManager
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -19,10 +23,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
 import com.example.ui.viewmodel.CameraUiState
 import com.example.ui.viewmodel.ChatTubeViewModel
 
@@ -32,6 +38,29 @@ fun CameraScreen(
     onNavigateToFeed: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
+    var hasCameraPermission by remember {
+        mutableStateOf(
+            ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.CAMERA
+            ) == PackageManager.PERMISSION_GRANTED
+        )
+    }
+
+    val cameraPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission(),
+        onResult = { granted ->
+            hasCameraPermission = granted
+        }
+    )
+
+    LaunchedEffect(Unit) {
+        if (!hasCameraPermission) {
+            cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
+        }
+    }
+
     val cameraState by viewModel.cameraState.collectAsState()
     val aiCaption by viewModel.aiCaptionState.collectAsState()
     val isGeneratingCaption by viewModel.isGeneratingCaption.collectAsState()
@@ -61,7 +90,21 @@ fun CameraScreen(
                 .padding(innerPadding)
                 .fillMaxSize()
         ) {
-            if (capturedBitmapVibe == null) {
+            if (!hasCameraPermission) {
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Icon(Icons.Default.CameraAlt, contentDescription = "Camera", tint = ChatTubeColors.Pink, modifier = Modifier.size(64.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text("We need camera permission to record your amazing moments!", color = ChatTubeColors.TextPrimary)
+                    Spacer(modifier = Modifier.height(16.dp))
+                    LiquidGlassButton(onClick = { cameraPermissionLauncher.launch(Manifest.permission.CAMERA) }) {
+                        Text("Grant Permission", color = ChatTubeColors.TextPrimary, fontWeight = FontWeight.Bold)
+                    }
+                }
+            } else if (capturedBitmapVibe == null) {
                 // --- CAMERA VIEWFINDER MODE ---
                 
                 // Camera View Finder canvas simulation
@@ -240,19 +283,16 @@ fun CameraScreen(
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         
-                        Button(
+                        LiquidGlassButton(
                             onClick = {
                                 if (customVibeInput.trim().isNotEmpty()) {
                                     viewModel.applyAILensPrompt(customVibeInput)
                                 }
                             },
                             enabled = cameraState !is CameraUiState.LoadingFilter,
-                            colors = ButtonDefaults.buttonColors(containerColor = ChatTubeColors.Yellow),
-                            contentPadding = PaddingValues(horizontal = 12.dp, vertical = 0.dp),
                             modifier = Modifier
                                 .height(46.dp)
-                                .testTag("apply_lens_btn"),
-                            shape = RoundedCornerShape(12.dp)
+                                .testTag("apply_lens_btn")
                         ) {
                             if (cameraState is CameraUiState.LoadingFilter) {
                                 CircularProgressIndicator(color = Color.Black, modifier = Modifier.size(16.dp))
@@ -469,14 +509,13 @@ fun CameraScreen(
                                     .testTag("ai_caption_input"),
                                 shape = RoundedCornerShape(12.dp)
                             )
-                            Button(
+                            LiquidGlassButton(
                                 onClick = {
                                     val activeVibeDescription = activeLens?.filterName ?: "Default"
                                     viewModel.generateAICaptionForPost(imageDetailsPrompt, activeVibeDescription)
                                 },
                                 enabled = !isGeneratingCaption,
-                                colors = ButtonDefaults.buttonColors(containerColor = ChatTubeColors.Pink),
-                                shape = RoundedCornerShape(12.dp)
+                                modifier = Modifier.height(44.dp)
                             ) {
                                 if (isGeneratingCaption) {
                                     CircularProgressIndicator(color = ChatTubeColors.TextPrimary, modifier = Modifier.size(16.dp))
@@ -551,13 +590,11 @@ fun CameraScreen(
                             }
 
                             // Send directly to Friends list (Snapchat style)
-                            Button(
+                            LiquidGlassButton(
                                 onClick = { showSendToFriendDialog = true },
                                 modifier = Modifier
                                     .weight(1.2f)
-                                    .testTag("send_to_friend_btn"),
-                                shape = RoundedCornerShape(12.dp),
-                                colors = ButtonDefaults.buttonColors(containerColor = ChatTubeColors.Yellow)
+                                    .testTag("send_to_friend_btn")
                             ) {
                                 Row(
                                     horizontalArrangement = Arrangement.spacedBy(4.dp),

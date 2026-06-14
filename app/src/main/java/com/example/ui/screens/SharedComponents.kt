@@ -357,3 +357,51 @@ fun RankBadge(rank: String, modifier: Modifier = Modifier) {
         )
     }
 }
+
+@Composable
+fun LiquidGlassButton(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    content: @Composable RowScope.() -> Unit
+) {
+    androidx.compose.material3.Button(
+        onClick = onClick,
+        enabled = enabled,
+        colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+            containerColor = Color.Transparent,
+            contentColor = Color.Black // Ensuring good contrast inside glass
+        ),
+        contentPadding = PaddingValues(0.dp),
+        shape = RoundedCornerShape(24.dp),
+        modifier = modifier
+            .clip(RoundedCornerShape(24.dp))
+            .background(
+                brush = Brush.linearGradient(
+                    colors = listOf(
+                        Color.White.copy(alpha = 0.5f),
+                        Color.White.copy(alpha = 0.1f)
+                    ),
+                    start = Offset(0f, 0f),
+                    end = Offset(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY)
+                )
+            )
+            .border(
+                width = 1.5.dp,
+                brush = Brush.linearGradient(
+                    colors = listOf(
+                        Color.White.copy(alpha = 0.8f),
+                        Color.White.copy(alpha = 0.2f)
+                    )
+                ),
+                shape = RoundedCornerShape(24.dp)
+            )
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = 24.dp, vertical = 12.dp),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically,
+            content = content
+        )
+    }
+}

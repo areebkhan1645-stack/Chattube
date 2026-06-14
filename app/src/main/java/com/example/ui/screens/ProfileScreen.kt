@@ -491,15 +491,14 @@ fun ProfileScreen(
                                     Text("Discard")
                                 }
 
-                                Button(
+                                LiquidGlassButton(
                                     onClick = {
                                         viewModel.updateUserProfile(editNameInput, editBioInput, editServerRegion)
                                         showEditProfileDialog = false
                                     },
-                                    modifier = Modifier.weight(1.2f),
-                                    colors = ButtonDefaults.buttonColors(containerColor = ChatTubeColors.Yellow)
+                                    modifier = Modifier.weight(1.2f)
                                 ) {
-                                    Text("Save Changes", color = Color.Black, fontWeight = FontWeight.Bold)
+                                    Text("Save Changes", color = Color.White, fontWeight = FontWeight.Bold)
                                 }
                             }
                         }
