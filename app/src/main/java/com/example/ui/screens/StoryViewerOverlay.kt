@@ -8,6 +8,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
@@ -247,6 +249,29 @@ fun StoryViewerOverlay(
                                         viewModel.setViewingStoryIndex(-1) // close
                                     }
                                 }
+                        )
+                    }
+
+                    // React Button (Overlay at bottom)
+                    var hasReacted by remember(activeIdx) { mutableStateOf(false) }
+                    IconButton(
+                        onClick = {
+                            if (!hasReacted) {
+                                hasReacted = true
+                                viewModel.reactToStory(currentStory.id, currentStory.username)
+                            }
+                        },
+                        modifier = Modifier
+                            .align(Alignment.BottomEnd)
+                            .padding(bottom = 80.dp, end = 20.dp)
+                            .clip(CircleShape)
+                            .background(Color.Black.copy(alpha = 0.4f))
+                    ) {
+                        Icon(
+                            imageVector = if (hasReacted) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                            contentDescription = "React to story",
+                            tint = if (hasReacted) Color.Red else Color.White,
+                            modifier = Modifier.size(32.dp)
                         )
                     }
                 }

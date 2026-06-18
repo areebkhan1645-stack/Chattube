@@ -76,3 +76,14 @@ data class MessageEntity(
     val durationSeconds: Int = 5,
     val appliedFilter: String = "None"
 )
+
+@Entity(tableName = "notifications")
+data class NotificationEntity(
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    val senderId: String, // User who triggered the notification
+    val receiverId: String, // User receiving the notification
+    val type: String, // request, like, comment, story_react
+    val targetId: Long? = null, // reel_id or post_id
+    val isRead: Boolean = false,
+    val createdAt: Long = System.currentTimeMillis()
+)

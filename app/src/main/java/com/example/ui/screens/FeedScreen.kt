@@ -38,6 +38,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
+import com.example.data.local.NotificationEntity
 import com.example.data.local.PostEntity
 import com.example.data.local.UserStatsEntity
 import com.example.data.local.StoryEntity
@@ -76,6 +77,11 @@ fun FeedScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val uploadError by viewModel.uploadError.collectAsState()
 
+    var showNotificationsBottomSheet by remember { mutableStateOf(false) }
+    val notifications by viewModel.notifications.collectAsState()
+    val unreadCount = notifications.count { !it.isRead }
+    val hasNewNotification = unreadCount > 0
+
     LaunchedEffect(uploadError) {
         if (uploadError != null) {
             snackbarHostState.showSnackbar(uploadError!!)
@@ -93,7 +99,51 @@ fun FeedScreen(
                     title = "TUBE & INTERACTION",
                     subtitle = "ChatTube",
                     trailingContent = {
-                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
+                            val infiniteTransition = rememberInfiniteTransition(label = "pulse")
+                            val pulseScale by infiniteTransition.animateFloat(
+                                initialValue = 0.8f,
+                                targetValue = 1.2f,
+                                animationSpec = infiniteRepeatable(
+                                    animation = tween(800, easing = FastOutSlowInEasing),
+                                    repeatMode = RepeatMode.Reverse
+                                ),
+                                label = "pulseScale"
+                            )
+
+                            IconButton(
+                                onClick = { 
+                                    showNotificationsBottomSheet = true 
+                                    viewModel.markNotificationsRead()
+                                }
+                            ) {
+                                Box {
+                                    Icon(
+                                        imageVector = if (hasNewNotification) Icons.Default.Favorite else Icons.Outlined.FavoriteBorder,
+                                        contentDescription = "Notifications",
+                                        tint = if (hasNewNotification) Color.Red else ChatTubeColors.TextPrimary,
+                                        modifier = Modifier.scale(if (hasNewNotification) pulseScale else 1f)
+                                    )
+                                    if (unreadCount > 0) {
+                                        Box(
+                                            modifier = Modifier
+                                                .size(16.dp)
+                                                .clip(CircleShape)
+                                                .background(ChatTubeColors.Yellow)
+                                                .align(Alignment.TopEnd),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            Text(
+                                                text = if (unreadCount > 9) "9+" else unreadCount.toString(),
+                                                color = Color.Black,
+                                                fontSize = 10.sp,
+                                                fontWeight = FontWeight.Bold
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+
                             IconButton(
                                 onClick = { showUploadReelBottomSheet = true },
                                 modifier = Modifier
@@ -248,7 +298,7 @@ fun FeedScreen(
                                 post = post,
                                 currentUsername = userStats?.username,
                                 currentUserProfilePicUri = userStats?.profilePicUri,
-                                onLikeToggle = { viewModel.likePost(post.id, post.isLiked) },
+                                onLikeToggle = { viewModel.likePost(post.id, post.isLiked, post.username) },
                                 onCommentClick = { activeCommentsPostId = post.id }
                             )
                         }
@@ -318,10 +368,10 @@ fun FeedScreen(
                         // Right-Hand Floating Reels controls
                         Column(
                             modifier = Modifier
-                                .align(Alignment.CenterEnd)
-                                .padding(end = 16.dp),
+                                .align(Alignment.BottomEnd)
+                                .padding(end = 8.dp, bottom = 80.dp),
                             horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.spacedBy(20.dp)
+                            verticalArrangement = Arrangement.spacedBy(24.dp)
                         ) {
                             // User Profile Avatar Circle
                             val reelProfilePic = if (currentReel.username == userStats?.username) userStats?.profilePicUri else null
@@ -330,7 +380,7 @@ fun FeedScreen(
                             // Heart React
                             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                 IconButton(
-                                    onClick = { viewModel.likePost(currentReel.id, currentReel.isLiked) },
+                                    onClick = { viewModel.likePost(currentReel.id, currentReel.isLiked, currentReel.username) },
                                     modifier = Modifier
                                         .clip(CircleShape)
                                         .background(if (currentReel.isLiked) ChatTubeColors.Pink else Color.Black.copy(alpha = 0.4f))
@@ -371,15 +421,18 @@ fun FeedScreen(
                             }
 
                             // Easy next reel navigation (infinite looping)
-                            IconButton(
-                                onClick = { activeReelIndex++ },
-                                modifier = Modifier
-                                    .clip(CircleShape)
-                                    .background(ChatTubeColors.Yellow)
-                            ) {
-                                Icon(Icons.Default.ArrowDownward, contentDescription = "Next Reel", tint = Color.Black)
+                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                IconButton(
+                                    onClick = { activeReelIndex++ },
+                                    modifier = Modifier
+                                        .clip(CircleShape)
+                                        .background(ChatTubeColors.Yellow)
+                                ) {
+                                    Icon(Icons.Default.ArrowDownward, contentDescription = "Next Reel", tint = Color.Black)
+                                }
+                                Spacer(modifier = Modifier.height(4.dp))
+                                Text("Next Reel", color = ChatTubeColors.Yellow, fontSize = 9.sp, fontWeight = FontWeight.Bold)
                             }
-                            Text("Next Reel", color = ChatTubeColors.Yellow, fontSize = 9.sp, fontWeight = FontWeight.Bold)
                         }
 
                         // Bottom descriptive text layout
@@ -674,6 +727,70 @@ fun FeedScreen(
                 }
                 
                 Spacer(modifier = Modifier.height(16.dp))
+            }
+        }
+    }
+
+    if (showNotificationsBottomSheet) {
+        ModalBottomSheet(
+            onDismissRequest = { showNotificationsBottomSheet = false },
+            containerColor = ChatTubeColors.SurfaceDark,
+            sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = false)
+        ) {
+            val df = java.text.SimpleDateFormat("MMM dd, HH:mm", java.util.Locale.getDefault())
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            ) {
+                Text("Notifications", color = ChatTubeColors.TextPrimary, fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                Spacer(modifier = Modifier.height(16.dp))
+                LazyColumn {
+                    items(notifications) { notif ->
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 6.dp),
+                            colors = CardDefaults.cardColors(containerColor = ChatTubeColors.DarkBackground)
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(16.dp).fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                val icon = when (notif.type) {
+                                    "like" -> Icons.Default.Favorite to Color.Red
+                                    "request" -> Icons.Default.PersonAdd to ChatTubeColors.Yellow
+                                    "story_react" -> Icons.Default.EmojiEmotions to ChatTubeColors.Pink
+                                    else -> Icons.Default.Notifications to Color.White
+                                }
+                                Icon(icon.first, contentDescription = null, tint = icon.second, modifier = Modifier.size(32.dp))
+                                Spacer(modifier = Modifier.width(16.dp))
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Text(
+                                        text = when(notif.type) {
+                                            "like" -> "@${notif.senderId} liked your post/reel."
+                                            "request" -> "@${notif.senderId} sent you a friend request."
+                                            "story_react" -> "@${notif.senderId} reacted to your story."
+                                            else -> "New notification from @${notif.senderId}"
+                                        },
+                                        color = ChatTubeColors.TextPrimary,
+                                        fontWeight = if (!notif.isRead) FontWeight.Bold else FontWeight.Normal
+                                    )
+                                    Text(
+                                        text = df.format(java.util.Date(notif.createdAt)),
+                                        color = ChatTubeColors.TextSecondary,
+                                        fontSize = 12.sp
+                                    )
+                                }
+                            }
+                        }
+                    }
+                    if (notifications.isEmpty()) {
+                        item {
+                            Text("No new notifications.", color = ChatTubeColors.TextSecondary, modifier = Modifier.padding(16.dp))
+                        }
+                    }
+                }
             }
         }
     }

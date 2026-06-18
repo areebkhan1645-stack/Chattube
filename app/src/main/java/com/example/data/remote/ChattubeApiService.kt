@@ -44,11 +44,24 @@ data class UploadReelResponse(
     val coins: Int
 )
 
+data class RemoteNotification(
+    val id: Long,
+    val senderId: String,
+    val receiverId: String,
+    val type: String,
+    val targetId: Long?,
+    val isRead: Boolean,
+    val createdAt: Long
+)
+
 /**
  * Real Server API Interface for Chattube.
  * This interface defines the endpoints for your actual backend server.
  */
 interface ChattubeApiService {
+
+    @GET("api/notifications")
+    suspend fun getNotifications(): Response<List<RemoteNotification>>
 
     @GET("api/v1/users/{username}/stats")
     suspend fun getUserStats(@Path("username") username: String): Response<RemoteUserStats>

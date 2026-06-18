@@ -101,3 +101,18 @@ interface MessageDao {
     @Query("DELETE FROM messages")
     suspend fun clearAllMessages()
 }
+
+@Dao
+interface NotificationDao {
+    @Query("SELECT * FROM notifications WHERE receiverId = :receiverId ORDER BY createdAt DESC")
+    fun getNotificationsForUser(receiverId: String): Flow<List<NotificationEntity>>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertNotification(notification: NotificationEntity)
+
+    @Query("UPDATE notifications SET isRead = 1 WHERE id = :notificationId")
+    suspend fun markNotificationAsRead(notificationId: Long)
+
+    @Query("UPDATE notifications SET isRead = 1 WHERE receiverId = :receiverId AND isRead = 0")
+    suspend fun markAllAsReadForUser(receiverId: String)
+}

@@ -353,7 +353,7 @@ fun ExploreScreen(
                                     ) {
                                         LiquidGlassButton(
                                             onClick = {
-                                                viewModel.likePost(post.id, post.isLiked)
+                                                viewModel.likePost(post.id, post.isLiked, post.username)
                                                 previewingPost = previewingPost?.copy(
                                                     isLiked = !post.isLiked,
                                                     likesCount = post.likesCount + if (!post.isLiked) 1 else -1

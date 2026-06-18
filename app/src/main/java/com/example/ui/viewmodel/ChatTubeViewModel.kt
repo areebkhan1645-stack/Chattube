@@ -7,6 +7,7 @@ import com.example.data.DatabaseProvider
 import com.example.data.gemini.AIFilterResult
 import com.example.data.gemini.GeminiService
 import com.example.data.local.MessageEntity
+import com.example.data.local.NotificationEntity
 import com.example.data.local.PostEntity
 import com.example.data.local.StoryEntity
 import com.example.data.local.UserStatsEntity
@@ -28,7 +29,8 @@ class ChatTubeViewModel(application: Application) : AndroidViewModel(application
         userStatsDao = db.userStatsDao(),
         postDao = db.postDao(),
         storyDao = db.storyDao(),
-        messageDao = db.messageDao()
+        messageDao = db.messageDao(),
+        notificationDao = db.notificationDao()
     )
 
     // State flows representing database contents
@@ -70,10 +72,43 @@ class ChatTubeViewModel(application: Application) : AndroidViewModel(application
     // Temporary user text inputs for feeds
     val newCommentText = MutableStateFlow("")
 
-    // Repository operations exposed securely to UI
-    fun likePost(postId: Long, currentLikeStatus: Boolean) {
+    val notifications = MutableStateFlow<List<NotificationEntity>>(emptyList())
+
+    init {
         viewModelScope.launch {
-            repository.toggleLikePost(postId, !currentLikeStatus)
+            userStats.collect { currentUser ->
+                if (currentUser != null) {
+                    repository.getNotificationsFlow(currentUser.username).collect {
+                        notifications.value = it
+                    }
+                } else {
+                    notifications.value = emptyList()
+                }
+            }
+        }
+    }
+
+    // Repository operations exposed securely to UI
+    fun likePost(postId: Long, currentLikeStatus: Boolean, postOwnerId: String) {
+        viewModelScope.launch {
+            val stats = repository.getOrCreateUserStats()
+            repository.toggleLikePost(postId, !currentLikeStatus, postOwnerId, stats.username)
+        }
+    }
+
+    fun markNotificationsRead() {
+        viewModelScope.launch {
+            val stats = repository.getOrCreateUserStats()
+            repository.markNotificationsRead(stats.username)
+        }
+    }
+
+    fun reactToStory(storyId: Long, storyOwnerId: String) {
+        viewModelScope.launch {
+            val stats = repository.getOrCreateUserStats()
+            if (stats.username != storyOwnerId) {
+                repository.reactToStory(stats.username, storyOwnerId, storyId)
+            }
         }
     }
 

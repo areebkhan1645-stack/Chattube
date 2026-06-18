@@ -9,13 +9,18 @@ class ChatTubeRepository(
     private val userStatsDao: UserStatsDao,
     private val postDao: PostDao,
     private val storyDao: StoryDao,
-    private val messageDao: MessageDao
+    private val messageDao: MessageDao,
+    private val notificationDao: NotificationDao
 ) {
     val userStats: Flow<UserStatsEntity?> = userStatsDao.getUserStatsFlow()
     val loggedInAccounts: Flow<List<UserStatsEntity>> = userStatsDao.getLoggedInAccountsFlow()
     val posts: Flow<List<PostEntity>> = postDao.getAllPosts()
     val stories: Flow<List<StoryEntity>> = storyDao.getAllStories()
     val messages: Flow<List<MessageEntity>> = messageDao.getAllMessages()
+
+    fun getNotificationsFlow(receiverId: String): Flow<List<NotificationEntity>> {
+        return notificationDao.getNotificationsForUser(receiverId)
+    }
 
     suspend fun getOrCreateUserStats(): UserStatsEntity {
         val existing = userStatsDao.getUserStats()
@@ -162,8 +167,44 @@ class ChatTubeRepository(
         incrementSnapScore(15) // earn points for posting!
     }
 
-    suspend fun toggleLikePost(postId: Long, isLiked: Boolean) {
+    suspend fun toggleLikePost(postId: Long, isLiked: Boolean, postOwnerId: String, currentUserId: String) {
         postDao.updatePostLiked(postId, isLiked)
+        if (isLiked && postOwnerId != currentUserId) {
+            notificationDao.insertNotification(
+                NotificationEntity(
+                    senderId = currentUserId,
+                    receiverId = postOwnerId,
+                    type = "like",
+                    targetId = postId
+                )
+            )
+        }
+    }
+
+    suspend fun sendFriendRequest(senderId: String, receiverId: String) {
+        notificationDao.insertNotification(
+            NotificationEntity(
+                senderId = senderId,
+                receiverId = receiverId,
+                type = "request",
+                targetId = null
+            )
+        )
+    }
+
+    suspend fun reactToStory(senderId: String, receiverId: String, storyId: Long) {
+        notificationDao.insertNotification(
+            NotificationEntity(
+                senderId = senderId,
+                receiverId = receiverId,
+                type = "story_react",
+                targetId = storyId
+            )
+        )
+    }
+
+    suspend fun markNotificationsRead(userId: String) {
+        notificationDao.markAllAsReadForUser(userId)
     }
 
     suspend fun addStory(username: String, userAvatarIndex: Int, mediaUrl: String, isAd: Boolean = false, rewardCoins: Int = 0, rankTag: String = "") {

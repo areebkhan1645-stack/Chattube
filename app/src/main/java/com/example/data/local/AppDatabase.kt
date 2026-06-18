@@ -9,9 +9,10 @@ import androidx.room.RoomDatabase
         PostEntity::class,
         StoryEntity::class,
         MessageEntity::class,
-        ChatGroupEntity::class
+        ChatGroupEntity::class,
+        NotificationEntity::class
     ],
-    version = 11,
+    version = 12,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -20,4 +21,5 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun storyDao(): StoryDao
     abstract fun messageDao(): MessageDao
     abstract fun chatGroupDao(): ChatGroupDao
+    abstract fun notificationDao(): NotificationDao
 }
