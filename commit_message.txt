@@ -1,0 +1,11 @@
+feat: implement real-time notification system and reel controls
+
+- Added `NotificationEntity` and `NotificationDao` to Room DB for local notification persistence.
+- Updated `AppDatabase` to version 12 to include the new Notifications table.
+- Added a `RemoteNotification` model and `getNotifications` endpoint to `ChattubeApiService`.
+- Implemented real-time tracking for `likePost`, `sendFriendRequest`, and `reactToStory` events in the repository, propagating to the data layer.
+- Added a new pulse-animated notification bell component with unread counts badge to the top-right header of `FeedScreen`.
+- Designed a `ModalBottomSheet` on `FeedScreen` to view user notifications (likes, requests, story reactions) chronologically.
+- Re-styled right-hand floating Reel interaction controls (like, comment, share) on the `FeedScreen` with infinite loop active indexing.
+- Added a persistent bottom-right 'React' (Heart) button to the `StoryViewerOverlay`.
+- Wired up state flows through `ChatTubeViewModel` to securely manage and sync notifications to the UI.
